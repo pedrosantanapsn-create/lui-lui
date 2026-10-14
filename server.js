@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // ---------- Camada de dados ----------
 let banco;
+let ultimoErro = null;
 
 function bancoJson() {
   const arquivo = path.join(__dirname, "dados", "produtos.json");
@@ -64,9 +65,17 @@ function bancoJson() {
 
 function bancoPostgres() {
   const { Pool } = require("pg");
+  // Conexao interna do Render (host sem ponto) nao usa SSL; a externa usa.
+  let precisaSsl = false;
+  try {
+    const host = new URL(URL_BANCO).hostname;
+    precisaSsl = host.includes(".") && host !== "localhost";
+  } catch {
+    precisaSsl = !URL_BANCO.includes("localhost");
+  }
   const pool = new Pool({
     connectionString: URL_BANCO,
-    ssl: URL_BANCO.includes("localhost") ? false : { rejectUnauthorized: false },
+    ssl: precisaSsl ? { rejectUnauthorized: false } : false,
   });
   return {
     tipo: "PostgreSQL",
@@ -116,7 +125,7 @@ function exigirSenha(req, res, next) {
 
 // ---------- Rotas da API ----------
 app.get("/api/status", (_req, res) => {
-  res.json({ ok: true, banco: banco.tipo });
+  res.json({ ok: true, banco: banco.tipo, temUrlBanco: !!URL_BANCO, erroBanco: ultimoErro });
 });
 
 app.post("/api/login", (req, res) => {
@@ -185,6 +194,7 @@ app.delete("/api/produtos/:id", exigirSenha, async (req, res) => {
     await banco.iniciar();
     console.log("Banco pronto:", banco.tipo);
   } catch (e) {
+    ultimoErro = e.message;
     console.error("Falha ao iniciar o banco:", e.message);
     if (URL_BANCO) {
       console.error("Usando arquivo JSON temporario como reserva.");
