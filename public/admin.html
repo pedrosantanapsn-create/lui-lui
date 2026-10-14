@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo | Liu e Lui</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="img/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="pagina-admin">
+
+<header class="admin-topo">
+  <div class="container admin-topo-inner">
+    <div class="admin-marca">
+      <img src="img/logo.png" alt="Liu e Lui">
+      <div>
+        <strong>Painel Administrativo</strong>
+        <span>Liu e Lui Semijoias</span>
+      </div>
+    </div>
+    <div class="admin-topo-acoes">
+      <a class="botao botao-linha" href="index.html">Ver o site</a>
+      <button class="botao botao-linha" type="button" id="sair" hidden>Sair</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== TELA DE LOGIN ===== -->
+<main class="container" id="tela-login">
+  <section class="cartao-login">
+    <h1>Entrar no painel</h1>
+    <p class="dica">Acesso restrito à administração da loja.</p>
+    <form id="form-login">
+      <label>Senha
+        <input type="password" id="login-senha" autocomplete="current-password" placeholder="Digite a senha" required>
+      </label>
+      <button class="botao botao-ouro" type="submit" id="login-botao">Entrar</button>
+      <p class="aviso" id="login-aviso"></p>
+    </form>
+  </section>
+</main>
+
+<!-- ===== PAINEL ===== -->
+<main class="container" id="tela-painel" hidden>
+
+  <section class="resumo" id="resumo"></section>
+
+  <section class="bloco">
+    <h2 id="form-titulo">Cadastrar produto</h2>
+    <p class="dica">Preencha os campos e clique em Salvar. O produto entra no catálogo do site na hora.</p>
+    <form class="formulario" id="form-produto">
+      <label class="largo">Nome do produto
+        <input id="f-nome" maxlength="60" required placeholder="Ex.: Colar Coração">
+      </label>
+      <label>Categoria
+        <select id="f-categoria">
+          <option value="brincos">Brincos</option>
+          <option value="colares">Colares</option>
+          <option value="aneis">Anéis</option>
+          <option value="pulseiras">Pulseiras</option>
+        </select>
+      </label>
+      <label>Preço (R$)
+        <input id="f-preco" type="number" step="0.01" min="0" required placeholder="89.90">
+      </label>
+      <label class="largo">Foto do produto (opcional)
+        <input id="f-foto" type="file" accept="image/*">
+      </label>
+      <div class="formulario-acoes">
+        <img class="previa" id="f-previa" alt="" hidden>
+        <button class="botao botao-ouro" type="submit" id="f-salvar">Salvar</button>
+        <button class="botao botao-linha" type="button" id="f-cancelar" hidden>Cancelar edição</button>
+        <span class="aviso" id="f-aviso"></span>
+      </div>
+    </form>
+  </section>
+
+  <section class="bloco">
+    <div class="bloco-topo">
+      <h2>Produtos cadastrados</h2>
+      <button class="botao botao-linha" type="button" id="recarregar">Atualizar lista</button>
+    </div>
+    <div class="tabela-rolagem">
+      <table class="tabela" id="tabela">
+        <thead>
+          <tr>
+            <th>Foto</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="linhas">
+          <tr><td colspan="5" class="vazio-linha">Carregando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="admin-rodape">
+  <div class="container">
+    <p>Painel administrativo — Liu e Lui Semijoias</p>
+  </div>
+</footer>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

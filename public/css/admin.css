@@ -1,0 +1,47 @@
+/* ===== Painel administrativo — Liu e Lui ===== */
+.pagina-admin{background:#faf6f7;min-height:100vh;display:flex;flex-direction:column}
+.pagina-admin main{flex:1;padding-block:28px;width:100%}
+
+/* Topo */
+.admin-topo{background:var(--preto);color:#f3e9ed;position:sticky;top:0;z-index:30}
+.admin-topo-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px;flex-wrap:wrap}
+.admin-marca{display:flex;align-items:center;gap:12px}
+.admin-marca img{height:44px;width:auto;border-radius:6px;background:var(--rosa-fundo);padding:3px 8px}
+.admin-marca strong{display:block;font-family:var(--display);font-size:1.25rem;font-weight:600}
+.admin-marca span{font-size:.78rem;color:#b39aa4;letter-spacing:1.5px;text-transform:uppercase}
+.admin-topo-acoes{display:flex;gap:8px;flex-wrap:wrap}
+.admin-topo .botao-linha{border-color:rgba(255,255,255,.45);color:#f3e9ed}
+.admin-topo .botao-linha:hover{background:var(--ouro);border-color:var(--ouro);color:#fff}
+
+/* Login */
+.cartao-login{max-width:420px;margin:48px auto;background:#fff;border:1px solid var(--linha);border-radius:18px;padding:32px}
+.cartao-login h1{font-size:1.9rem;margin-bottom:6px}
+.cartao-login form{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+
+/* Blocos */
+.bloco{background:#fff;border:1px solid var(--linha);border-radius:18px;padding:24px;margin-bottom:22px}
+.bloco h2{font-size:1.5rem}
+.bloco-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+
+/* Resumo */
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.resumo-item{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:16px 18px}
+.resumo-item strong{display:block;font-family:var(--display);font-size:1.9rem;color:var(--ouro-escuro);line-height:1}
+.resumo-item span{font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--cinza)}
+
+/* Tabela */
+.tabela-rolagem{overflow-x:auto}
+.tabela{width:100%;border-collapse:collapse;min-width:620px}
+.tabela th{text-align:left;font-size:.7rem;letter-spacing:1.6px;text-transform:uppercase;color:var(--cinza);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--linha)}
+.tabela td{padding:12px;border-bottom:1px solid var(--linha);vertical-align:middle}
+.tabela tr:last-child td{border-bottom:none}
+.tabela-foto{width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--rosa-fundo);display:block}
+.tabela-sem-foto{width:52px;height:52px;border-radius:10px;background:var(--rosa-fundo);display:grid;place-items:center;font-family:var(--display);font-size:1.1rem;color:var(--rosa)}
+.tabela-nome{font-family:var(--display);font-size:1.1rem}
+.tabela-preco{color:var(--ouro-escuro);font-weight:500;white-space:nowrap}
+.etiqueta{display:inline-block;font-size:.72rem;letter-spacing:1.4px;text-transform:uppercase;color:var(--cinza);border:1px solid var(--linha);border-radius:999px;padding:3px 10px}
+.acoes{display:flex;gap:6px;flex-wrap:wrap}
+.acoes button{font-family:var(--texto);font-size:.78rem;padding:6px 12px;border-radius:999px;border:1px solid var(--linha);background:transparent;color:var(--cinza);cursor:pointer;white-space:nowrap}
+.acoes button:hover{border-color:var(--ouro);color:var(--ouro-escuro)}
+.acoes .perigo:hover{border-color:#b23a48;color:#b23a48}
+.vazio-linha{text-align:center;color:var(--cinza);padding:30px 12px}
