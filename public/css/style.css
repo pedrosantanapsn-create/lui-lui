@@ -1,0 +1,146 @@
+/* ===== Liu e Lui Semijoias — identidade rosa, dourado e preto ===== */
+:root{
+  --rosa:#e5a2b6;
+  --rosa-claro:#fbeef2;
+  --rosa-fundo:#f6dfe6;
+  --ouro:#b8921f;
+  --ouro-escuro:#8f7116;
+  --preto:#1d171a;
+  --cinza:#7a6b70;
+  --linha:#eadde2;
+  --branco:#ffffff;
+  --display:'Cormorant Garamond', Georgia, serif;
+  --texto:'Jost', 'Segoe UI', system-ui, sans-serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--branco);color:var(--preto);font-family:var(--texto);font-weight:300;line-height:1.6}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0}
+img{max-width:100%;display:block}
+a{color:inherit}
+
+.container{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ===== Menu ===== */
+#menu{position:sticky;top:0;z-index:50;background:var(--preto);box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:10px;padding-bottom:10px}
+.marca img{height:46px;width:auto;border-radius:6px;background:var(--rosa-fundo);padding:3px 8px}
+#menu-lista{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+#menu-lista a{color:#ddd0d6;text-decoration:none;font-size:.92rem;letter-spacing:.4px}
+#menu-lista a:hover{color:var(--ouro)}
+.menu-botao{display:none;background:none;border:1px solid rgba(255,255,255,.4);color:#fff;font-size:1.2rem;border-radius:8px;padding:4px 10px;cursor:pointer}
+
+@media (max-width:760px){
+  .menu-botao{display:block}
+  #menu-lista{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;background:var(--preto);border-top:1px solid #332a2e}
+  #menu-lista.aberto{display:flex}
+  #menu-lista li{border-bottom:1px solid #332a2e}
+  #menu-lista a{display:block;padding:14px 20px}
+}
+
+/* ===== Botões ===== */
+.botao{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 22px;border-radius:999px;text-decoration:none;font-family:var(--texto);font-size:.92rem;font-weight:500;border:1.5px solid transparent;cursor:pointer}
+.botao-ouro{background:var(--ouro);color:#fff;border-color:var(--ouro)}
+.botao-ouro:hover{background:var(--ouro-escuro);border-color:var(--ouro-escuro)}
+.botao-ouro:disabled{opacity:.6;cursor:default}
+.botao-claro{border-color:rgba(255,255,255,.6);color:#fff}
+.botao-claro:hover{border-color:#fff;background:rgba(255,255,255,.1)}
+.botao-linha{border-color:var(--ouro);color:var(--ouro-escuro);background:transparent}
+.botao-linha:hover{background:var(--ouro);color:#fff}
+
+/* ===== Início ===== */
+.hero{background:linear-gradient(135deg,#1d171a 0%,#3c2a33 55%,#c98aa0 100%);color:#fff}
+.hero-inner{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center;padding-top:70px;padding-bottom:70px}
+.olho{color:var(--ouro);letter-spacing:3px;text-transform:uppercase;font-size:.74rem;font-weight:500;margin:0 0 12px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.5rem);line-height:1.1;margin-bottom:14px}
+.hero-texto{color:#eadfe4;font-size:1.05rem;max-width:34rem;margin:0 0 26px}
+.hero-acoes{display:flex;gap:10px;flex-wrap:wrap}
+.hero-logo img{border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+@media (max-width:760px){.hero-inner{grid-template-columns:1fr;padding-top:48px;padding-bottom:48px}.hero-logo{order:-1;max-width:300px}}
+
+/* ===== Seções ===== */
+.secao{padding:64px 0}
+.secao-clara{background:var(--rosa-claro);border-top:1px solid var(--linha);border-bottom:1px solid var(--linha)}
+.secao-escura{background:var(--preto);color:#f3e9ed}
+.titulo{font-size:2.1rem;margin-bottom:10px}
+.titulo::after{content:"";display:block;width:54px;height:2px;background:var(--ouro);margin-top:10px}
+.centro{text-align:center}
+.centro.titulo::after{margin-left:auto;margin-right:auto}
+.subtitulo{text-align:center;color:var(--cinza);margin:0 auto 28px;max-width:40rem}
+.secao-escura .subtitulo{color:#c7b6be}
+
+.sobre{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.numeros{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.numero{background:var(--rosa-claro);border-radius:14px;padding:20px 14px;text-align:center}
+.numero strong{display:block;font-family:var(--display);font-size:2rem;color:var(--ouro-escuro);line-height:1}
+.numero span{font-size:.84rem;color:var(--cinza)}
+@media (max-width:760px){.sobre{grid-template-columns:1fr}}
+
+/* ===== Painel de cadastro ===== */
+.painel{background:var(--branco);border:1px solid var(--linha);border-radius:16px;padding:18px;margin-bottom:26px}
+.painel-abrir{background:none;border:none;color:var(--cinza);font-family:var(--texto);font-size:.86rem;cursor:pointer;text-decoration:underline}
+.painel-abrir:hover{color:var(--ouro-escuro)}
+.painel-login{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.painel-topo{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.painel-topo h3{font-size:1.35rem}
+.dica{color:var(--cinza);font-size:.86rem;margin:4px 0 14px}
+
+label{display:flex;flex-direction:column;gap:5px;font-size:.73rem;letter-spacing:1.4px;text-transform:uppercase;color:var(--cinza);min-width:0}
+input,select{font-family:var(--texto);font-size:.95rem;font-weight:300;padding:10px 12px;border:1px solid var(--linha);border-radius:10px;background:var(--branco);color:var(--preto);width:100%}
+input:focus,select:focus{outline:2px solid var(--ouro);outline-offset:1px;border-color:var(--ouro)}
+
+.formulario{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.formulario .largo{grid-column:1/-1}
+.formulario-acoes{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.previa{width:58px;height:58px;border-radius:10px;object-fit:cover;border:1px solid var(--linha)}
+.aviso{font-size:.85rem;color:var(--cinza)}
+.aviso.erro{color:#b23a48}
+@media (max-width:620px){.formulario{grid-template-columns:1fr}}
+
+/* ===== Filtros e produtos ===== */
+.filtros{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:26px}
+.chip{border:1.5px solid var(--ouro);color:var(--ouro-escuro);background:transparent;border-radius:999px;padding:7px 17px;font-family:var(--texto);font-size:.86rem;cursor:pointer}
+.chip.ativo,.chip:hover{background:var(--ouro);color:#fff}
+
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:18px}
+.produto{background:var(--branco);border:1px solid var(--linha);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.produto:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(29,23,26,.12)}
+.produto-foto{aspect-ratio:1/1;background:var(--rosa-fundo);display:grid;place-items:center;overflow:hidden}
+.produto-foto img{width:100%;height:100%;object-fit:cover}
+.produto-foto .sem-foto{font-family:var(--display);font-size:2rem;color:var(--rosa)}
+.produto-dados{padding:14px 16px 16px;display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.produto-cat{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--cinza)}
+.produto-nome{font-family:var(--display);font-size:1.15rem;font-weight:600}
+.produto-preco{color:var(--ouro-escuro);font-weight:500;font-size:1.05rem}
+.produto .botao{margin-top:auto;padding:9px 14px;font-size:.86rem}
+.produto-ferramentas{display:flex;gap:6px;margin-top:6px}
+.produto-ferramentas button{flex:1;font-family:var(--texto);font-size:.78rem;padding:6px;border-radius:999px;border:1px solid var(--linha);background:transparent;color:var(--cinza);cursor:pointer}
+.produto-ferramentas button:hover{border-color:var(--ouro);color:var(--ouro-escuro)}
+.vazio{grid-column:1/-1;text-align:center;color:var(--cinza);padding:40px 16px;border:1px dashed var(--linha);border-radius:16px;margin:0}
+
+/* ===== Diferenciais ===== */
+.vantagens{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.vantagem{text-align:center;padding:28px 20px;border:1px solid var(--linha);border-radius:16px}
+.vantagem h3{font-size:1.3rem;margin-bottom:8px}
+.vantagem p{color:var(--cinza);margin:0;font-size:.95rem}
+@media (max-width:760px){.vantagens{grid-template-columns:1fr}}
+
+/* ===== Contato ===== */
+.contatos{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.contatos li{min-width:0}
+.contatos small{display:block;color:#b39aa4;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+.contatos a{color:#f3e9ed;text-decoration:none}
+.contatos a:hover{color:var(--ouro)}
+@media (max-width:760px){.contatos{grid-template-columns:1fr}}
+
+/* ===== Rodapé ===== */
+footer{background:#0f0b0d;color:#9d8b93;text-align:center;padding:20px 0;font-size:.86rem}
+footer p{margin:4px 0}
+.miudo{font-size:.78rem;opacity:.8}
+
+/* ===== WhatsApp flutuante ===== */
+.whatsapp{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.28);z-index:40}
+.whatsapp:hover{transform:scale(1.07)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liu e Lui | Semijoias</title>
+  <meta name="description" content="Liu e Lui Semijoias — acessórios femininos há 30 anos no Tivoli Shopping. Brincos, colares, anéis e pulseiras.">
+  <link rel="icon" href="img/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== MENU ===== -->
+<nav id="menu">
+  <div class="container nav-inner">
+    <a class="marca" href="#inicio">
+      <img src="img/logo.png" alt="Liu e Lui Semijoias">
+    </a>
+    <button class="menu-botao" id="menu-botao" aria-label="Abrir menu">☰</button>
+    <ul id="menu-lista">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#catalogo">Catálogo</a></li>
+      <li><a href="#diferenciais">Diferenciais</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ===== INÍCIO ===== -->
+<header id="inicio" class="hero">
+  <div class="container hero-inner">
+    <div>
+      <p class="olho">Há 30 anos no Tivoli Shopping</p>
+      <h1>Semijoias que valorizam o seu estilo</h1>
+      <p class="hero-texto">Brincos, colares, anéis e pulseiras com design atual e acabamento de qualidade, para você se sentir bem em todos os momentos.</p>
+      <div class="hero-acoes">
+        <a class="botao botao-ouro" href="#catalogo">Ver catálogo</a>
+        <a class="botao botao-claro" href="https://wa.me/5519991703150" target="_blank" rel="noopener">Pedir pelo WhatsApp</a>
+      </div>
+    </div>
+    <div class="hero-logo">
+      <img src="img/logo.png" alt="Logo Liu e Lui">
+    </div>
+  </div>
+</header>
+
+<!-- ===== SOBRE ===== -->
+<section id="sobre" class="secao">
+  <div class="container sobre">
+    <div>
+      <h2 class="titulo">Sobre a Liu e Lui</h2>
+      <p>A Liu e Lui está há cerca de 30 anos no mercado de acessórios femininos. Localizada no Tivoli Shopping, a loja oferece semijoias para todos os públicos: mulheres, homens, crianças, jovens e adultos.</p>
+      <p>Nosso diferencial está na qualidade das peças e no atendimento próximo, que é a base de cada venda e da confiança construída com nossos clientes ao longo de três décadas.</p>
+    </div>
+    <div class="numeros">
+      <div class="numero"><strong>30</strong><span>anos de história</span></div>
+      <div class="numero"><strong>+10 mil</strong><span>seguidores</span></div>
+      <div class="numero"><strong>4</strong><span>coleções</span></div>
+      <div class="numero"><strong>100%</strong><span>atendimento humano</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATÁLOGO ===== -->
+<section id="catalogo" class="secao secao-clara">
+  <div class="container">
+    <h2 class="titulo centro">Catálogo</h2>
+    <p class="subtitulo">Escolha uma categoria e peça direto pelo WhatsApp.</p>
+
+    <!-- Painel de cadastro (aparece só para quem tem a senha) -->
+    <div class="painel" id="painel">
+      <button class="painel-abrir" id="painel-abrir">Entrar como administrador</button>
+
+      <form class="painel-login" id="form-login" hidden>
+        <label>Senha do painel
+          <input type="password" id="login-senha" autocomplete="current-password" placeholder="Digite a senha">
+        </label>
+        <button class="botao botao-ouro" type="submit">Entrar</button>
+        <button class="botao botao-linha" type="button" id="login-cancelar">Cancelar</button>
+        <span class="aviso" id="login-aviso"></span>
+      </form>
+
+      <div class="painel-admin" id="painel-admin" hidden>
+        <div class="painel-topo">
+          <h3 id="form-titulo">Cadastrar produto</h3>
+          <button class="botao botao-linha" type="button" id="sair">Sair do painel</button>
+        </div>
+        <p class="dica">Preencha os campos e clique em Salvar. O produto entra no catálogo na hora.</p>
+        <form class="formulario" id="form-produto">
+          <label class="largo">Nome do produto
+            <input id="f-nome" maxlength="60" required placeholder="Ex.: Colar Coração">
+          </label>
+          <label>Categoria
+            <select id="f-categoria">
+              <option value="brincos">Brincos</option>
+              <option value="colares">Colares</option>
+              <option value="aneis">Anéis</option>
+              <option value="pulseiras">Pulseiras</option>
+            </select>
+          </label>
+          <label>Preço (R$)
+            <input id="f-preco" type="number" step="0.01" min="0" required placeholder="89.90">
+          </label>
+          <label class="largo">Foto do produto (opcional)
+            <input id="f-foto" type="file" accept="image/*">
+          </label>
+          <div class="formulario-acoes">
+            <img class="previa" id="f-previa" alt="" hidden>
+            <button class="botao botao-ouro" type="submit" id="f-salvar">Salvar</button>
+            <button class="botao botao-linha" type="button" id="f-cancelar" hidden>Cancelar edição</button>
+            <span class="aviso" id="f-aviso"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="filtros" id="filtros">
+      <button class="chip ativo" data-filtro="todos">Todos</button>
+      <button class="chip" data-filtro="brincos">Brincos</button>
+      <button class="chip" data-filtro="colares">Colares</button>
+      <button class="chip" data-filtro="aneis">Anéis</button>
+      <button class="chip" data-filtro="pulseiras">Pulseiras</button>
+    </div>
+
+    <div class="grade" id="produtos">
+      <p class="vazio">Carregando produtos…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIFERENCIAIS ===== -->
+<section id="diferenciais" class="secao">
+  <div class="container">
+    <h2 class="titulo centro">Por que escolher a Liu e Lui</h2>
+    <div class="vantagens">
+      <div class="vantagem">
+        <h3>Qualidade</h3>
+        <p>Peças selecionadas com acabamento cuidadoso e bom custo-benefício.</p>
+      </div>
+      <div class="vantagem">
+        <h3>Atendimento</h3>
+        <p>Atendimento próximo na loja e pelo WhatsApp, do jeito que você precisa.</p>
+      </div>
+      <div class="vantagem">
+        <h3>Para todos</h3>
+        <p>Opções para mulheres, homens, crianças e todas as idades.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTATO ===== -->
+<section id="contato" class="secao secao-escura">
+  <div class="container">
+    <h2 class="titulo centro">Contato</h2>
+    <p class="subtitulo">Venha nos visitar ou fale com a gente pelos canais abaixo.</p>
+    <ul class="contatos">
+      <li><small>Loja</small><span>Tivoli Shopping — Av. Santa Bárbara, 777, Vila Mollon IV, Santa Bárbara d'Oeste/SP, CEP 13456-080</span></li>
+      <li><small>Telefone</small><span>(19) 3458-6102</span></li>
+      <li><small>WhatsApp</small><a href="https://wa.me/5519991703150" target="_blank" rel="noopener">(19) 99170-3150</a></li>
+      <li><small>E-mail</small><a href="mailto:liuelui@hotmail.com">liuelui@hotmail.com</a></li>
+      <li><small>Instagram</small><a href="https://instagram.com/liuelui" target="_blank" rel="noopener">@liuelui</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© <span id="ano"></span> Liu e Lui Semijoias. Todos os direitos reservados.</p>
+    <p class="miudo">Site desenvolvido como trabalho do Curso Técnico em Informática.</p>
+  </div>
+</footer>
+
+<a class="whatsapp" href="https://wa.me/5519991703150" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" width="30" height="30"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2m0 1.8a8.2 8.2 0 1 1-4.2 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8m-3 4.4c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5 0 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3l-2-1c-.3-.1-.5-.2-.7.1l-.9 1.2c-.2.2-.3.2-.6.1a7 7 0 0 1-2-1.3 7.7 7.7 0 0 1-1.4-1.8c-.2-.3 0-.4.1-.6l.5-.5.3-.5v-.6l-.9-2.1c-.2-.6-.5-.5-.7-.5z"/></svg>
+</a>
+
+<script src="js/script.js"></script>
+</body>
+</html>

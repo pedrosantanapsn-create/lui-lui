@@ -1,0 +1,17 @@
+{
+  "name": "liuelui-site",
+  "version": "1.0.0",
+  "description": "Site da loja Liu e Lui Semijoias com catalogo e painel de cadastro",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "4.21.2",
+    "pg": "8.13.1"
+  }
+}
