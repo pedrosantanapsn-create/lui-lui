@@ -1,0 +1,266 @@
+/* =====================================================================
+   LIU E LUI SEMIJOIAS
+   Camada da loja: troca a identidade do template (verde esmeralda)
+   pela da marca (rosa, dourado e preto) e acrescenta o que o site precisa.
+   ===================================================================== */
+
+:root {
+  /* identidade da marca, no lugar do verde do template */
+  --forest:      #1D171A;  /* preto da marca (seções escuras) */
+  --forest-deep: #120E10;  /* preto mais fundo (rodapé) */
+  --forest-soft: #3C2A33;  /* bordas e hovers no escuro */
+  --forest-tint: #FBEEF2;  /* rosa bem claro para fundos */
+
+  --ink:         #1D171A;  /* títulos */
+  --char:        #3C3438;  /* texto corrido */
+  --stone:       #7A6B70;  /* textos de apoio */
+
+  --pearl:       #FFFFFF;  /* fundo da página */
+  --mist:        #F6DFE6;  /* fundo de bloco e moldura de foto */
+  --hair:        #EADDE2;  /* linhas finas */
+
+  --gold:        #B8921F;  /* dourado da marca */
+  --gold-deep:   #8F7116;  /* dourado escuro, texto pequeno */
+  --gold-lite:   #D4AD3A;  /* dourado claro, no escuro */
+  --gold-glow:   #E7C35A;  /* dourado pálido, fios no escuro */
+
+  --rosa:        #E5A2B6;  /* rosa da marca */
+
+  --sans: "Jost", "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------------------------------------------------------------------
+   LOGO
+   A marca completa (coroa, moldura, monograma e nome) só se lê impressa
+   ou em tamanho grande. No cabeçalho ela entra deitada: o brasão ao lado
+   do nome, cada um no seu tamanho. O rodapé usa a versão completa.
+   --------------------------------------------------------------------- */
+.site-header .brand {
+  display: inline-flex;
+  flex-direction: row;      /* o template empilha; aqui fica deitado */
+  align-items: center;
+  gap: .8rem;
+}
+.brand-brasao { height: 44px; width: auto; display: block; }
+.brand-nome   { height: 23px; width: auto; display: block; }
+.mobile-nav-top .brand-nome { height: 22px; }
+
+/* No topo da página, em cima do banner, a barra cresce e a logo aparece
+   grande. Assim que o visitante rola, a barra encolhe e a logo volta ao
+   tamanho compacto, para não roubar espaço do conteúdo. */
+.site-header { transition: background .4s var(--ease), box-shadow .4s var(--ease),
+                           border-color .4s var(--ease), height .35s var(--ease); }
+.brand-brasao, .brand-nome { transition: height .35s var(--ease); }
+
+.site-header:not(.solid) { height: 112px; }
+.site-header:not(.solid) .brand-brasao { height: 72px; }
+.site-header:not(.solid) .brand-nome   { height: 37px; }
+.site-header:not(.solid) .brand { gap: 1rem; }
+
+@media (max-width: 560px) {
+  .brand-brasao { height: 38px; }
+  .brand-nome   { height: 19px; }
+  .site-header .brand { gap: .6rem; }
+  .site-header:not(.solid) { height: 92px; }
+  .site-header:not(.solid) .brand-brasao { height: 50px; }
+  .site-header:not(.solid) .brand-nome   { height: 26px; }
+  .site-header:not(.solid) .brand { gap: .7rem; }
+}
+
+/* ------------------------------------------------- botão do WhatsApp no topo */
+.btn-whats-topo {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .5rem 1rem; border-radius: 999px;
+  background: var(--gold); color: #fff; text-decoration: none;
+  font-family: var(--sans); font-size: .82rem; font-weight: 500;
+  letter-spacing: .02em; white-space: nowrap;
+}
+.btn-whats-topo:hover { background: var(--gold-deep); color: #fff; }
+.btn-whats-topo svg { width: 17px; height: 17px; }
+@media (max-width: 720px) { .btn-whats-topo span, .btn-whats-topo { font-size: 0; padding: .5rem; gap: 0; } .btn-whats-topo svg { width: 20px; height: 20px; } }
+
+/* ------------------------------------------------- filtros do catálogo */
+.filtros {
+  display: flex; flex-wrap: wrap; gap: .5rem;
+  justify-content: center; margin: 0 0 2.2rem;
+}
+.filtro {
+  font-family: var(--sans); font-size: .85rem; font-weight: 400;
+  padding: .5rem 1.15rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--gold); background: transparent; color: var(--gold-deep);
+  transition: background .2s, color .2s;
+}
+.filtro:hover { background: var(--mist); }
+.filtro.ativo { background: var(--gold); border-color: var(--gold); color: #fff; }
+.filtro:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.sem-resultado {
+  grid-column: 1 / -1; text-align: center; color: var(--stone);
+  font-family: var(--sans); padding: 2.5rem 1rem; margin: 0;
+  border: 1px dashed var(--hair); border-radius: 14px;
+}
+
+/* ------------------------------------------------- botão Pedir no card */
+.pcard .row { align-items: center; }
+.pedir {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .42rem 1.05rem; border-radius: 999px;
+  background: var(--gold); color: #fff; text-decoration: none;
+  font-family: var(--sans); font-size: .8rem; font-weight: 500;
+  letter-spacing: .02em; white-space: nowrap;
+}
+.pedir:hover { background: var(--gold-deep); color: #fff; }
+.pedir::before {
+  content: ""; width: 14px; height: 14px; flex: none;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* ------------------------------------------------- contato */
+.contato-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+  align-items: start;
+}
+.contato-lista { list-style: none; margin: 0; padding: 0; }
+.contato-lista li {
+  font-family: var(--sans); font-size: .98rem; color: var(--char);
+  padding: 1rem 0; border-bottom: 1px solid var(--hair); line-height: 1.6;
+}
+.contato-lista li:last-child { border-bottom: none; }
+.contato-lista .rot {
+  display: block; font-size: .7rem; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--stone); margin-bottom: .28rem;
+}
+.contato-lista a { color: var(--gold-deep); text-decoration: none; }
+.contato-lista a:hover { text-decoration: underline; }
+@media (max-width: 860px) { .contato-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+/* ------------------------------------------------- rodapé */
+.rodape-inner { padding: 3rem 0 2rem; text-align: center; }
+.rodape-logo {
+  height: 132px; width: auto; display: block; margin: 0 auto 1.8rem;
+  filter: invert(1) brightness(1.7);
+}
+@media (max-width: 560px) { .rodape-logo { height: 104px; } }
+.rodape-nav { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; margin-bottom: 1.8rem; }
+.rodape-nav a {
+  font-family: var(--sans); font-size: .88rem; color: #E8DCE1;
+  text-decoration: none; letter-spacing: .02em;
+}
+.rodape-nav a:hover { color: var(--gold-lite); }
+.rodape-fim {
+  display: flex; flex-direction: column; gap: .4rem;
+  font-family: var(--sans); font-size: .78rem; color: #9D8B93;
+  padding-top: 1.6rem; border-top: 1px solid var(--forest-soft);
+}
+
+/* ------------------------------------------------- WhatsApp flutuante */
+.whats-flutuante {
+  position: fixed; right: 20px; bottom: 20px; z-index: 60;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #25D366; color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 10px 26px rgba(0,0,0,.26);
+  transition: transform .2s;
+}
+.whats-flutuante svg { width: 30px; height: 30px; }
+.whats-flutuante:hover { transform: scale(1.07); color: #fff; }
+@media (prefers-reduced-motion: reduce) { .whats-flutuante:hover { transform: none; } }
+
+/* =====================================================================
+   AJUSTES SOBRE O BANNER CLARO
+   O banner usa foto de fundo rosa, com o texto preto por cima. O
+   cabeçalho começa transparente em cima dele, então a logo e o menu
+   ficam escuros — a logo aparece no desenho original, preta sobre rosa,
+   sem precisar ser invertida para branco.
+   ===================================================================== */
+
+/* véu rosa: cobre o lado esquerdo para o texto ter contraste e some
+   antes de chegar na modelo */
+.hero-bg::after {
+  background:
+    /* faixa de cima: dá fundo para a logo e o menu lerem sobre a foto */
+    linear-gradient(180deg,
+      rgba(251,238,242,0.94) 0%,
+      rgba(251,238,242,0.62) 9%,
+      rgba(251,238,242,0.00) 17%),
+    /* véu da esquerda: contraste para a chamada */
+    linear-gradient(90deg,
+      rgba(251,238,242,0.97) 0%,
+      rgba(251,238,242,0.92) 34%,
+      rgba(251,238,242,0.00) 58%);
+}
+.hero-bg img { opacity: 1; }
+
+/* No celular a foto ocupa a largura toda e o véu horizontal não cobre
+   mais o texto. Aqui ele vira vertical: rosa forte em cima, onde está a
+   chamada, abrindo para a foto embaixo. */
+@media (max-width: 860px) {
+  .hero-bg::after {
+    background: linear-gradient(180deg,
+      rgba(251,238,242,0.97) 0%,
+      rgba(251,238,242,0.95) 40%,
+      rgba(251,238,242,0.78) 62%,
+      rgba(251,238,242,0.30) 82%,
+      rgba(251,238,242,0.10) 100%);
+  }
+  .hero-bg img { object-position: 62% 18%; }
+}
+
+/* texto do banner em tom escuro */
+.hero-copy .eyebrow { color: var(--gold-deep); }
+.hero-copy .eyebrow::before { background: var(--gold-deep); }
+.hero-copy h1 { color: var(--ink); }
+.hero-copy h1 em { color: var(--gold-deep); }
+.hero-copy p { color: #4A3C42; }
+.btn-v.on-dark { color: var(--ink); border-color: rgba(29,23,26,.35); }
+.btn-v.on-dark:hover { background: rgba(29,23,26,.06); }
+.hero-aside .k { color: var(--gold-deep); }
+.hero-aside .v { color: #4A3C42; }
+.hero-scroll { color: #4A3C42; }
+.hero-scroll .line { background: #4A3C42; }
+
+/* cabeçalho transparente (topo da página, em cima do banner claro) */
+.site-header:not(.solid) .main-nav a { color: var(--ink); }
+.site-header:not(.solid) .main-nav a:hover { color: var(--gold-deep); }
+.site-header:not(.solid) .icon-btn { color: var(--ink); }
+
+/* cabeçalho sólido (depois de rolar) */
+.site-header.solid { background: rgba(255, 255, 255, 0.94); }
+.site-header.solid .main-nav a { color: var(--char); }
+.site-header.solid .icon-btn { color: var(--ink); }
+.icon-btn:hover { background: rgba(29,23,26,0.07); color: var(--gold-deep); }
+
+/* menu do celular: fundo escuro, nome em branco */
+.mobile-nav .brand-nome { filter: invert(1) brightness(2); }
+
+/* =====================================================================
+   RITMO DE COR DA PÁGINA
+   O site alterna branco, rosa claro e preto conforme o visitante desce.
+   O rosa (o mesmo tom do fundo da logo) marca as duas seções em que o
+   cliente age: escolher a peça e falar com a loja. Os cards ficam
+   brancos para a foto da peça se destacar.
+   ===================================================================== */
+.collection { background: var(--forest-tint); }
+.contato    { background: var(--forest-tint); }
+.pcard .frame { background: #fff; }
+
+/* ---------------------------------------------------------------------
+   MAPA DA LOCALIZAÇÃO
+   Fecha o item 7.2 do mapa do site.
+   --------------------------------------------------------------------- */
+.mapa { margin-top: 3rem; }
+.mapa iframe {
+  width: 100%; height: 380px; border: 0; display: block;
+  border-radius: 16px; background: var(--mist);
+  box-shadow: 0 14px 34px rgba(29,23,26,.10);
+}
+.mapa-link {
+  display: inline-flex; align-items: center; gap: .45rem; margin-top: 1rem;
+  font-family: var(--sans); font-size: .86rem; font-weight: 500;
+  color: var(--gold-deep); text-decoration: none; letter-spacing: .02em;
+}
+.mapa-link:hover { color: var(--gold); text-decoration: underline; }
+.mapa-link svg { width: 16px; height: 16px; }
+@media (max-width: 560px) { .mapa iframe { height: 280px; } }
