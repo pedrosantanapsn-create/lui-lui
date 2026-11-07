@@ -280,3 +280,8 @@
 .mapa-link:hover { color: var(--gold); text-decoration: underline; }
 .mapa-link svg { width: 16px; height: 16px; }
 @media (max-width: 560px) { .mapa iframe { height: 280px; } }
+
+/* a tarja da seção Diferenciais vinha verde-escura do template e agora
+   corre sobre uma foto de fundo rosa */
+.ethics-media { background: var(--mist); }
+.ethics-media .band { background: linear-gradient(0deg, rgba(29,23,26,0.88), transparent); }
