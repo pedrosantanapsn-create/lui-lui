@@ -307,12 +307,3 @@
 .craft-copy .eyebrow { justify-content: center; }
 .craft-stats { justify-content: center; }
 @media (max-width: 560px) { .craft-copy .stamp { width: 96px; height: 96px; } }
-
-/* aviso de preço no topo do catálogo: discreto, mas visível antes do
-   visitante clicar em Pedir */
-.aviso-preco {
-  margin-top: .6rem;
-  font-size: .82rem;
-  color: #6B5A61;
-  font-style: italic;
-}
