@@ -52,18 +52,34 @@
                            border-color .4s var(--ease), height .35s var(--ease); }
 .brand-brasao, .brand-nome { transition: height .35s var(--ease); }
 
-.site-header:not(.solid) { height: 112px; }
-.site-header:not(.solid) .brand-brasao { height: 72px; }
-.site-header:not(.solid) .brand-nome   { height: 37px; }
-.site-header:not(.solid) .brand { gap: 1rem; }
+/* a coluna da logo precisa ter a largura real do desenho, senão o nome
+   transborda por cima do menu (o grid do cabeçalho divide em 1fr/auto/1fr
+   e não enxerga a largura das imagens) */
+.site-header .brand { min-width: max-content; }
+/* menu um pouco mais compacto, para sobrar espaço para a logo */
+.main-nav ul { gap: clamp(0.9rem, 1.9vw, 1.7rem); }
+
+.site-header:not(.solid) { height: 148px; }
+.site-header:not(.solid) .header-inner { gap: 2.2rem; }
+.site-header:not(.solid) .brand-brasao { height: 92px; }
+.site-header:not(.solid) .brand-nome   { height: 48px; }
+.site-header:not(.solid) .brand { gap: 1.1rem; }
+
+/* entre 901px e 1200px o menu ainda aparece e o espaço é curto:
+   a logo grande não cabe junto, então volta ao tamanho intermediário */
+@media (min-width: 901px) and (max-width: 1200px) {
+  .site-header:not(.solid) { height: 112px; }
+  .site-header:not(.solid) .brand-brasao { height: 70px; }
+  .site-header:not(.solid) .brand-nome   { height: 36px; }
+}
 
 @media (max-width: 560px) {
   .brand-brasao { height: 38px; }
   .brand-nome   { height: 19px; }
   .site-header .brand { gap: .6rem; }
-  .site-header:not(.solid) { height: 92px; }
-  .site-header:not(.solid) .brand-brasao { height: 50px; }
-  .site-header:not(.solid) .brand-nome   { height: 26px; }
+  .site-header:not(.solid) { height: 108px; }
+  .site-header:not(.solid) .brand-brasao { height: 62px; }
+  .site-header:not(.solid) .brand-nome   { height: 32px; }
   .site-header:not(.solid) .brand { gap: .7rem; }
 }
 
@@ -182,9 +198,9 @@
   background:
     /* faixa de cima: dá fundo para a logo e o menu lerem sobre a foto */
     linear-gradient(180deg,
-      rgba(251,238,242,0.94) 0%,
-      rgba(251,238,242,0.62) 9%,
-      rgba(251,238,242,0.00) 17%),
+      rgba(251,238,242,0.95) 0%,
+      rgba(251,238,242,0.80) 11%,
+      rgba(251,238,242,0.00) 22%),
     /* véu da esquerda: contraste para a chamada */
     linear-gradient(90deg,
       rgba(251,238,242,0.97) 0%,
