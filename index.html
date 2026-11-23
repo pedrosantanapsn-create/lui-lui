@@ -22,17 +22,16 @@
   <!-- ============================================ CABEÇALHO -->
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
-      <a class="brand" href="#top" aria-label="Liu e Lui Semijoias, início">
+      <a class="brand" href="#inicio" aria-label="Liu e Lui Semijoias, início">
         <img class="brand-brasao" src="img/logo-brasao.svg" alt="">
         <img class="brand-nome" src="img/logo-nome.svg" alt="Liu e Lui Semijoias">
       </a>
 
       <nav class="main-nav" aria-label="Principal">
         <ul>
+          <li><a href="#inicio">Início</a></li>
           <li><a href="#catalogo">Catálogo</a></li>
-          <li><a href="#mais-vendidos">Mais vendidos</a></li>
           <li><a href="#sobre">Sobre</a></li>
-          <li><a href="#diferenciais">Diferenciais</a></li>
           <li><a href="#contato">Contato</a></li>
         </ul>
       </nav>
@@ -58,11 +57,10 @@
       </button>
     </div>
     <ul>
-      <li><a href="#catalogo"><span class="n">01</span> Catálogo</a></li>
-      <li><a href="#mais-vendidos"><span class="n">02</span> Mais vendidos</a></li>
+      <li><a href="#inicio"><span class="n">01</span> Início</a></li>
+      <li><a href="#catalogo"><span class="n">02</span> Catálogo</a></li>
       <li><a href="#sobre"><span class="n">03</span> Sobre a loja</a></li>
-      <li><a href="#diferenciais"><span class="n">04</span> Diferenciais</a></li>
-      <li><a href="#contato"><span class="n">05</span> Contato</a></li>
+      <li><a href="#contato"><span class="n">04</span> Contato</a></li>
     </ul>
     <div class="mobile-nav-foot">
       <span>Tivoli Shopping</span>
@@ -74,7 +72,7 @@
     <span id="top"></span>
 
     <!-- ============================================ BANNER DE ABERTURA -->
-    <section class="hero" aria-labelledby="hero-h">
+    <section class="hero" data-aba="inicio" aria-labelledby="hero-h">
       <div class="hero-bg">
         <img src="img/hero.jpg" alt="Modelo usando colar, brincos e anel de semijoia da Liu e Lui.">
       </div>
@@ -102,7 +100,7 @@
     </section>
 
     <!-- ============================================ FAIXA -->
-    <div class="ticker" aria-hidden="true">
+    <div class="ticker" data-aba="inicio" aria-hidden="true">
       <div class="ticker-track" id="ticker">
         <span>Atendimento pelo WhatsApp</span>
         <span>Peças para todos os públicos</span>
@@ -116,7 +114,7 @@
     </div>
 
     <!-- ============================================ CATÁLOGO -->
-    <section class="section collection wrap" id="catalogo" aria-labelledby="catalogo-h">
+    <section class="section collection wrap" data-aba="catalogo" id="catalogo" aria-labelledby="catalogo-h">
       <div class="collection-top">
         <div class="section-head reveal">
           <span class="eyebrow"><span class="index-no">01</span>&nbsp; Catálogo</span>
@@ -150,7 +148,7 @@
     </section>
 
     <!-- ============================================ SOBRE A LOJA -->
-    <section class="section craft" id="sobre" aria-labelledby="sobre-h">
+    <section class="section craft" data-aba="sobre" id="sobre" aria-labelledby="sobre-h">
       <div class="craft-grid wrap">
         <div class="craft-copy reveal">
           <div class="stamp"><span><b>30</b><small>anos de loja</small></span></div>
@@ -168,7 +166,7 @@
     </section>
 
     <!-- ============================================ DIFERENCIAIS -->
-    <section class="section ethics wrap" id="diferenciais" aria-labelledby="diferenciais-h">
+    <section class="section ethics wrap" data-aba="sobre" id="diferenciais" aria-labelledby="diferenciais-h">
       <div class="ethics-grid">
         <div class="ethics-media reveal">
           <img src="img/diferenciais-conjunto.jpg" alt="Colar, brincos e pulseira dourados dispostos lado a lado.">
@@ -222,7 +220,7 @@
     </section>
 
     <!-- ============================================ MAIS VENDIDOS -->
-    <section class="section best wrap" id="mais-vendidos" aria-labelledby="best-h">
+    <section class="section best wrap" data-aba="inicio" id="mais-vendidos" aria-labelledby="best-h">
       <div class="best-top">
         <div class="section-head reveal">
           <span class="eyebrow"><span class="index-no">04</span>&nbsp; Preferidos</span>
@@ -241,10 +239,11 @@
 
       <div class="best-scroller" id="bestScroller">
       </div>
+      <p class="ver-catalogo"><a class="btn-v" href="#catalogo">Ver o catálogo completo</a></p>
     </section>
 
     <!-- ============================================ CONTATO -->
-    <section class="section contato wrap" id="contato" aria-labelledby="contato-h">
+    <section class="section contato wrap" data-aba="contato" id="contato" aria-labelledby="contato-h">
       <div class="contato-grid">
         <div class="reveal">
           <span class="eyebrow"><span class="index-no">05</span>&nbsp; Contato</span>
@@ -284,10 +283,9 @@
     <div class="wrap rodape-inner">
       <img class="rodape-logo" src="img/logo-liu-e-lui.svg" alt="Liu e Lui Semijoias">
       <nav class="rodape-nav" aria-label="Rodapé">
+        <a href="#inicio">Início</a>
         <a href="#catalogo">Catálogo</a>
-        <a href="#mais-vendidos">Mais vendidos</a>
         <a href="#sobre">Sobre</a>
-        <a href="#diferenciais">Diferenciais</a>
         <a href="#contato">Contato</a>
       </nav>
     </div>
@@ -333,6 +331,7 @@
 
   <script src="js/vendor/bootstrap.bundle.min.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/abas.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script src="js/loja.js"></script>
 </body>

@@ -460,7 +460,11 @@
     if (!d) return;
     el("sacolaAbrir").addEventListener("click", abrirSacola);
     el("sacolaFechar").addEventListener("click", function () { d.close(); });
-    el("sacolaContinuar").addEventListener("click", function () { d.close(); });
+    el("sacolaContinuar").addEventListener("click", function () {
+      d.close();
+      // "continuar escolhendo" leva de volta às peças, esteja onde estiver
+      if (document.body.dataset.abaAtual !== "catalogo") location.hash = "#catalogo";
+    });
     // toque fora da caixa fecha
     d.addEventListener("click", function (ev) { if (ev.target === d) d.close(); });
   }

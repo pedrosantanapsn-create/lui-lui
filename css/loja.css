@@ -445,3 +445,26 @@ body.com-sacola .site-footer, body.com-sacola footer { padding-bottom: 72px; }
 .sacola-enviar:hover { background: #178A45; color: #fff; }
 .sacola-continuar { margin-top: .6rem; border: 0; background: none; cursor: pointer; color: var(--char); font: 400 .92rem/1.4 var(--sans); text-decoration: underline; }
 .sacola-nota { margin: .7rem 0 0; font-size: .82rem; color: var(--char); }
+
+/* =====================================================================
+   ABAS DO SITE
+   Só os blocos da aba escolhida ficam visíveis (ver js/abas.js).
+   ===================================================================== */
+.fora-da-aba { display: none !important; }
+
+/* fora do Início não existe banner por baixo do cabeçalho fixo, então o
+   conteúdo precisa começar depois dele */
+body.sem-banner main { padding-top: var(--header-h); }
+main { min-height: 72vh; }
+
+/* item do menu da aba em que a pessoa está */
+.main-nav a.aba-ativa { color: var(--ink); }
+.main-nav a.aba-ativa::after { transform: scaleX(1); }
+.mobile-nav a.aba-ativa { color: var(--gold-lite); }
+.rodape-nav a.aba-ativa { color: var(--gold-lite); }
+
+.ver-catalogo { text-align: center; margin-top: 2.4rem; }
+
+/* os títulos traziam "01", "02"... da época em que tudo era uma página
+   só, em sequência; com abas essa numeração não quer dizer nada */
+.eyebrow .index-no { display: none; }

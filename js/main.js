@@ -12,7 +12,9 @@
     var header = document.getElementById("siteHeader");
     if (!header) return;
     var onScroll = function () {
-      header.classList.toggle("solid", window.scrollY > 40);
+      // só o Início tem banner; nas outras abas a barra já nasce sólida
+      header.classList.toggle("solid",
+        window.scrollY > 40 || document.body.classList.contains("sem-banner"));
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
