@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel · Liu e Lui</title>
+<link rel="icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --preto:#1D171A; --cinza:#6B5A61; --linha:#EADDE2;
+    --rosa:#FBEEF2; --rosa-forte:#E5A2B6;
+    --ouro:#B8921F; --ouro-escuro:#8F7116;
+    --verde:#2E7D5B; --vermelho:#B3261E;
+    --raio:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--rosa); color:var(--preto);
+    font:400 16px/1.5 'Jost',system-ui,sans-serif;
+    -webkit-text-size-adjust:100%;
+  }
+  h1,h2{font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; margin:0}
+  button{font:inherit; cursor:pointer}
+  input,select{font:inherit}
+
+  .barra{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; gap:.8rem;
+    padding:.9rem 1rem; background:#fff; border-bottom:1px solid var(--linha);
+  }
+  .barra img{height:34px}
+  .barra .titulo{font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:600}
+  .barra .espaco{flex:1}
+
+  .area{max-width:760px; margin:0 auto; padding:1.1rem 1rem 5rem}
+
+  .btn{
+    border:0; border-radius:999px; padding:.8rem 1.3rem;
+    background:var(--ouro); color:#fff; font-weight:600; letter-spacing:.02em;
+    min-height:46px;
+  }
+  .btn:hover{background:var(--ouro-escuro)}
+  .btn[disabled]{opacity:.55; cursor:not-allowed}
+  .btn.vazio{background:transparent; color:var(--preto); border:1px solid var(--linha)}
+  .btn.vazio:hover{background:#fff}
+  .btn.perigo{background:transparent; color:var(--vermelho); border:1px solid #E6C9C6}
+  .btn.perigo:hover{background:#FCF2F1}
+  .btn.largo{width:100%}
+
+  .cartao{background:#fff; border:1px solid var(--linha); border-radius:var(--raio); padding:1.2rem}
+
+  label{display:block; font-size:.82rem; font-weight:600; letter-spacing:.06em;
+        text-transform:uppercase; color:var(--cinza); margin:0 0 .35rem}
+  .campo{
+    width:100%; padding:.75rem .9rem; min-height:46px;
+    border:1px solid var(--linha); border-radius:10px; background:#fff; color:var(--preto);
+  }
+  .campo:focus{outline:2px solid var(--rosa-forte); outline-offset:1px; border-color:transparent}
+  .grupo{margin-bottom:1rem}
+  .dupla{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
+
+  .aviso{
+    margin:.9rem 0 0; padding:.8rem .95rem; border-radius:10px;
+    font-size:.93rem; line-height:1.45;
+  }
+  .aviso.erro{background:#FCF2F1; color:var(--vermelho); border:1px solid #E6C9C6}
+  .aviso.ok{background:#F0F7F3; color:var(--verde); border:1px solid #CBE3D7}
+  .aviso:empty{display:none; padding:0; margin:0}
+
+  /* ---- entrar ---- */
+  #entrar{max-width:400px; margin:3rem auto; padding:0 1rem}
+  #entrar .cartao{padding:1.6rem}
+  #entrar h1{font-size:1.6rem; margin-bottom:.3rem}
+  #entrar .sub{color:var(--cinza); font-size:.95rem; margin:0 0 1.4rem}
+
+  /* ---- lista ---- */
+  .topo-lista{display:flex; align-items:center; gap:.8rem; margin:0 0 1rem}
+  .topo-lista h2{font-size:1.5rem}
+  .conta{font-size:.86rem; color:var(--cinza)}
+
+  .peca{
+    display:grid; grid-template-columns:76px 1fr auto; gap:.9rem; align-items:center;
+    background:#fff; border:1px solid var(--linha); border-radius:var(--raio);
+    padding:.7rem; margin-bottom:.7rem;
+  }
+  .peca img{width:76px; height:95px; object-fit:cover; border-radius:9px; background:var(--rosa); display:block}
+  .peca .nome{font-weight:600; line-height:1.3}
+  .peca .det{font-size:.88rem; color:var(--cinza); margin-top:.15rem}
+  .peca .acoes{display:flex; flex-direction:column; gap:.4rem}
+  .peca .acoes button{padding:.5rem .8rem; font-size:.86rem; min-height:38px}
+  .selo{
+    display:inline-block; font-size:.7rem; font-weight:600; letter-spacing:.07em;
+    text-transform:uppercase; padding:.18rem .5rem; border-radius:999px; margin-right:.3rem;
+  }
+  .selo.escondido{background:#F0ECEE; color:var(--cinza)}
+  .selo.destaque{background:#FAF2DC; color:var(--ouro-escuro)}
+
+  .vazio-lista{text-align:center; color:var(--cinza); padding:2.5rem 1rem; line-height:1.6}
+
+  /* ---- formulario ---- */
+  dialog{
+    border:0; border-radius:16px; padding:0; width:min(560px,94vw);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,.4);
+  }
+  dialog::backdrop{background:rgba(29,23,26,.55)}
+  .form-topo{display:flex; align-items:center; padding:1.1rem 1.2rem; border-bottom:1px solid var(--linha)}
+  .form-topo h2{font-size:1.3rem; flex:1}
+  .fechar{border:0; background:transparent; font-size:1.6rem; line-height:1; color:var(--cinza); padding:.2rem .4rem}
+  .form-corpo{padding:1.2rem; max-height:min(70vh,640px); overflow:auto}
+  .form-pe{display:flex; gap:.7rem; padding:1rem 1.2rem; border-top:1px solid var(--linha)}
+  .form-pe .btn{flex:1}
+
+  .foto-area{display:grid; grid-template-columns:110px 1fr; gap:1rem; align-items:start}
+  .foto-previa{
+    width:110px; height:138px; border-radius:10px; object-fit:cover;
+    background:var(--rosa); border:1px dashed var(--linha); display:block;
+  }
+  .foto-dica{font-size:.86rem; color:var(--cinza); line-height:1.45; margin:.5rem 0 0}
+
+  .marca{display:flex; align-items:center; gap:.6rem; margin-bottom:.7rem; font-size:.95rem}
+  .marca input{width:22px; height:22px; accent-color:var(--ouro)}
+
+  @media (max-width:560px){
+    .dupla{grid-template-columns:1fr}
+    .peca{grid-template-columns:62px 1fr; grid-template-areas:"f i" "a a"}
+    .peca img{width:62px; height:78px; grid-area:f}
+    .peca .info{grid-area:i}
+    .peca .acoes{grid-area:a; flex-direction:row}
+    .peca .acoes button{flex:1}
+    .foto-area{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= ENTRAR ======================= -->
+<section id="entrar" hidden>
+  <div class="cartao">
+    <h1>Painel da loja</h1>
+    <p class="sub">Entre para cadastrar e editar as peças do site.</p>
+
+    <form id="formEntrar">
+      <div class="grupo">
+        <label for="email">E-mail</label>
+        <input class="campo" type="email" id="email" autocomplete="username" required>
+      </div>
+      <div class="grupo">
+        <label for="senha">Senha</label>
+        <input class="campo" type="password" id="senha" autocomplete="current-password" required minlength="6">
+      </div>
+      <button class="btn largo" type="submit" id="btnEntrar">Entrar</button>
+      <div class="aviso" id="avisoEntrar" role="status"></div>
+    </form>
+  </div>
+</section>
+
+<!-- ======================= PAINEL ======================= -->
+<header class="barra" id="barra" hidden>
+  <img src="img/logo-brasao.svg" alt="">
+  <span class="titulo">Painel da loja</span>
+  <span class="espaco"></span>
+  <button class="btn vazio" id="btnSair" type="button">Sair</button>
+</header>
+
+<main class="area" id="painel" hidden>
+  <div class="topo-lista">
+    <h2>Peças</h2>
+    <span class="espaco" style="flex:1"></span>
+    <button class="btn" id="btnNova" type="button">+ Nova peça</button>
+  </div>
+  <p class="conta" id="conta"></p>
+  <div class="aviso" id="avisoPainel" role="status"></div>
+  <div id="lista"></div>
+</main>
+
+<!-- ======================= FORMULÁRIO ======================= -->
+<dialog id="dlg">
+  <form id="formPeca" method="dialog">
+    <div class="form-topo">
+      <h2 id="formTitulo">Nova peça</h2>
+      <button class="fechar" type="button" id="btnFechar" aria-label="Fechar">×</button>
+    </div>
+
+    <div class="form-corpo">
+      <div class="grupo foto-area">
+        <img class="foto-previa" id="previa" alt="">
+        <div>
+          <label for="arquivo">Foto da peça</label>
+          <input class="campo" type="file" id="arquivo" accept="image/*">
+          <p class="foto-dica">A foto é cortada em pé, no formato do site, e reduzida sozinha — pode mandar direto do celular. Deixe a peça no centro.</p>
+        </div>
+      </div>
+
+      <div class="grupo">
+        <label for="nome">Nome da peça</label>
+        <input class="campo" type="text" id="nome" maxlength="80" required placeholder="Ex.: Brinco Argola Corrente">
+      </div>
+
+      <div class="dupla">
+        <div class="grupo">
+          <label for="categoria">Categoria</label>
+          <select class="campo" id="categoria" required>
+            <option value="brincos">Brincos</option>
+            <option value="colares">Colares</option>
+            <option value="aneis">Anéis</option>
+            <option value="pulseiras">Pulseiras</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label for="preco">Preço (R$)</label>
+          <input class="campo" type="number" id="preco" min="0" step="0.01" required inputmode="decimal" placeholder="89,90">
+        </div>
+      </div>
+
+      <label class="marca"><input type="checkbox" id="publicado" checked> Aparecer no site</label>
+      <label class="marca"><input type="checkbox" id="destaque"> Mostrar em “Mais vendidos”</label>
+
+      <div class="grupo" style="margin-top:1rem">
+        <label for="ordem">Posição na vitrine</label>
+        <input class="campo" type="number" id="ordem" value="0" step="1">
+        <p class="foto-dica">Número menor aparece antes. Deixe 0 se tanto faz.</p>
+      </div>
+
+      <div class="aviso" id="avisoForm" role="status"></div>
+    </div>
+
+    <div class="form-pe">
+      <button class="btn vazio" type="button" id="btnCancelar">Cancelar</button>
+      <button class="btn" type="button" id="btnSalvar">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // Estas duas chaves são públicas de propósito: elas só permitem o que as
+  // regras do banco deixarem. Quem manda é o cadastro de administradores.
+  var URL_BANCO = "https://usgguljynvqorgzmaokh.supabase.co";
+  var CHAVE     = "sb_publishable_iX1zDJp44BpBbcFseJxztQ_KX8HWhU5";
+  var sb = window.supabase.createClient(URL_BANCO, CHAVE);
+
+  var LARG = 900, ALT = 1125;   // 4:5, a moldura do card no site
+
+  var el = function (id) { return document.getElementById(id); };
+  var emEdicao = null;          // id da peça sendo editada, ou null
+  var fotoNova = null;          // blob preparado, se o usuário escolheu foto
+
+  function mostrar(caixa, texto, tipo) {
+    caixa.textContent = texto || "";
+    caixa.className = "aviso" + (texto ? " " + (tipo || "erro") : "");
+  }
+
+  function emReais(v) {
+    return Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+
+  function traduzErro(e) {
+    var m = (e && (e.message || e.error_description)) || "Algo deu errado.";
+    if (/Invalid login credentials/i.test(m)) return "E-mail ou senha incorretos.";
+    if (/Email not confirmed/i.test(m))       return "Confirme o e-mail pelo link que a Supabase enviou e tente de novo.";
+    if (/Failed to fetch|NetworkError/i.test(m)) return "Sem conexão com o banco. Verifique a internet.";
+    if (/row-level security|violates row-level/i.test(m))
+      return "Esta conta ainda não tem permissão para editar o catálogo.";
+    return m;
+  }
+
+  // ---------- entrar / sair ----------
+
+  el("formEntrar").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var btn = el("btnEntrar");
+    btn.disabled = true;
+    mostrar(el("avisoEntrar"), "");
+    sb.auth.signInWithPassword({ email: el("email").value.trim(), password: el("senha").value })
+      .then(function (r) {
+        if (r.error) throw r.error;
+      })
+      .catch(function (e) { mostrar(el("avisoEntrar"), traduzErro(e)); })
+      .finally(function () { btn.disabled = false; });
+  });
+
+  el("btnSair").addEventListener("click", function () { sb.auth.signOut(); });
+
+  sb.auth.onAuthStateChange(function (_evento, sessao) { aplicarSessao(sessao); });
+  sb.auth.getSession().then(function (r) { aplicarSessao(r.data.session); });
+
+  function aplicarSessao(sessao) {
+    var dentro = !!sessao;
+    el("entrar").hidden = dentro;
+    el("barra").hidden  = !dentro;
+    el("painel").hidden = !dentro;
+    if (dentro) {
+      el("conta").textContent = "Conectada como " + sessao.user.email;
+      carregar();
+    }
+  }
+
+  // ---------- lista ----------
+
+  function carregar() {
+    mostrar(el("avisoPainel"), "");
+    sb.from("produtos").select("*").order("ordem").order("criado_em", { ascending: false })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        desenhar(r.data || []);
+      })
+      .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });
+  }
+
+  function desenhar(itens) {
+    var lista = el("lista");
+    lista.textContent = "";
+
+    if (!itens.length) {
+      var p = document.createElement("p");
+      p.className = "vazio-lista";
+      p.textContent = "Nenhuma peça cadastrada ainda. Toque em “+ Nova peça” para começar.";
+      lista.appendChild(p);
+      return;
+    }
+
+    itens.forEach(function (it) {
+      var linha = document.createElement("div");
+      linha.className = "peca";
+
+      var img = document.createElement("img");
+      img.src = it.foto_url || "img/favicon.png";
+      img.alt = "";
+      linha.appendChild(img);
+
+      var info = document.createElement("div");
+      info.className = "info";
+
+      var selos = document.createElement("div");
+      if (!it.publicado) selos.appendChild(selo("Escondida", "escondido"));
+      if (it.destaque)   selos.appendChild(selo("Mais vendidos", "destaque"));
+      if (selos.children.length) info.appendChild(selos);
+
+      var nome = document.createElement("div");
+      nome.className = "nome";
+      nome.textContent = it.nome;
+      info.appendChild(nome);
+
+      var det = document.createElement("div");
+      det.className = "det";
+      det.textContent = rotulo(it.categoria) + " · " + emReais(it.preco);
+      info.appendChild(det);
+
+      linha.appendChild(info);
+
+      var acoes = document.createElement("div");
+      acoes.className = "acoes";
+
+      var bEditar = document.createElement("button");
+      bEditar.type = "button";
+      bEditar.className = "btn vazio";
+      bEditar.textContent = "Editar";
+      bEditar.addEventListener("click", function () { abrir(it); });
+      acoes.appendChild(bEditar);
+
+      var bApagar = document.createElement("button");
+      bApagar.type = "button";
+      bApagar.className = "btn perigo";
+      bApagar.textContent = "Apagar";
+      bApagar.addEventListener("click", function () { apagar(it); });
+      acoes.appendChild(bApagar);
+
+      linha.appendChild(acoes);
+      lista.appendChild(linha);
+    });
+  }
+
+  function selo(texto, classe) {
+    var s = document.createElement("span");
+    s.className = "selo " + classe;
+    s.textContent = texto;
+    return s;
+  }
+
+  function rotulo(c) {
+    return { brincos: "Brincos", colares: "Colares", aneis: "Anéis", pulseiras: "Pulseiras" }[c] || c;
+  }
+
+  // ---------- formulário ----------
+
+  el("btnNova").addEventListener("click", function () { abrir(null); });
+  el("btnFechar").addEventListener("click", fechar);
+  el("btnCancelar").addEventListener("click", fechar);
+  el("btnSalvar").addEventListener("click", salvar);
+
+  function abrir(item) {
+    emEdicao = item ? item.id : null;
+    fotoNova = null;
+    el("formTitulo").textContent = item ? "Editar peça" : "Nova peça";
+    el("nome").value      = item ? item.nome : "";
+    el("categoria").value = item ? item.categoria : "brincos";
+    el("preco").value     = item ? item.preco : "";
+    el("ordem").value     = item ? item.ordem : 0;
+    el("publicado").checked = item ? item.publicado : true;
+    el("destaque").checked  = item ? item.destaque : false;
+    // sem src o navegador desenha a moldura vazia; com src="" ele mostra
+    // o ícone de imagem quebrada
+    if (item && item.foto_url) el("previa").src = item.foto_url;
+    else el("previa").removeAttribute("src");
+    el("arquivo").value = "";
+    mostrar(el("avisoForm"), "");
+    el("dlg").showModal();
+  }
+
+  function fechar() { el("dlg").close(); }
+
+  el("arquivo").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) { fotoNova = null; return; }
+    mostrar(el("avisoForm"), "Preparando a foto…", "ok");
+    prepararFoto(f)
+      .then(function (blob) {
+        fotoNova = blob;
+        el("previa").src = URL.createObjectURL(blob);
+        mostrar(el("avisoForm"), "");
+      })
+      .catch(function () {
+        fotoNova = null;
+        mostrar(el("avisoForm"), "Não consegui ler essa imagem. Tente outra foto.");
+      });
+  });
+
+  // Corta em 4:5 pelo centro e reduz para 900x1125. Assim a foto do celular,
+  // que costuma ter 4 MB, chega ao site com uns 150 KB e no enquadramento certo.
+  function prepararFoto(arquivo) {
+    return new Promise(function (ok, falha) {
+      var img = new Image();
+      img.onload = function () {
+        var c = document.createElement("canvas");
+        c.width = LARG; c.height = ALT;
+        var ctx = c.getContext("2d");
+        ctx.fillStyle = "#FBEEF2";
+        ctx.fillRect(0, 0, LARG, ALT);
+        var escala = Math.max(LARG / img.width, ALT / img.height);
+        var w = img.width * escala, h = img.height * escala;
+        ctx.drawImage(img, (LARG - w) / 2, (ALT - h) / 2, w, h);
+        URL.revokeObjectURL(img.src);
+        c.toBlob(function (b) { b ? ok(b) : falha(); }, "image/jpeg", 0.86);
+      };
+      img.onerror = function () { URL.revokeObjectURL(img.src); falha(); };
+      img.src = URL.createObjectURL(arquivo);
+    });
+  }
+
+  function salvar() {
+    var nome = el("nome").value.trim();
+    var preco = parseFloat(el("preco").value);
+
+    if (!nome)                      return mostrar(el("avisoForm"), "Falta o nome da peça.");
+    if (!(preco >= 0))              return mostrar(el("avisoForm"), "Falta o preço.");
+    if (!emEdicao && !fotoNova)     return mostrar(el("avisoForm"), "Escolha uma foto da peça.");
+
+    var btn = el("btnSalvar");
+    btn.disabled = true;
+    mostrar(el("avisoForm"), "Salvando…", "ok");
+
+    enviarFoto()
+      .then(function (url) {
+        var dados = {
+          nome: nome,
+          categoria: el("categoria").value,
+          preco: preco,
+          publicado: el("publicado").checked,
+          destaque: el("destaque").checked,
+          ordem: parseInt(el("ordem").value, 10) || 0
+        };
+        if (url) dados.foto_url = url;
+        return emEdicao
+          ? sb.from("produtos").update(dados).eq("id", emEdicao)
+          : sb.from("produtos").insert(dados);
+      })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        fechar();
+        carregar();
+      })
+      .catch(function (e) { mostrar(el("avisoForm"), traduzErro(e)); })
+      .finally(function () { btn.disabled = false; });
+  }
+
+  function enviarFoto() {
+    if (!fotoNova) return Promise.resolve(null);
+    var nome = Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
+    return sb.storage.from("fotos").upload(nome, fotoNova, { contentType: "image/jpeg" })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        return sb.storage.from("fotos").getPublicUrl(nome).data.publicUrl;
+      });
+  }
+
+  function apagar(item) {
+    if (!confirm("Apagar “" + item.nome + "” do site? Isso não pode ser desfeito.\n\nSe for só para tirar do ar por enquanto, use Editar e desmarque “Aparecer no site”.")) return;
+    sb.from("produtos").delete().eq("id", item.id)
+      .then(function (r) {
+        if (r.error) throw r.error;
+        carregar();
+      })
+      .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });
+  }
+})();
+</script>
+</body>
+</html>
