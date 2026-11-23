@@ -18,30 +18,40 @@
     --raio:14px;
   }
   *{box-sizing:border-box}
+  [hidden]{display:none !important}
   body{
     margin:0; background:var(--rosa); color:var(--preto);
     font:400 16px/1.5 'Jost',system-ui,sans-serif;
     -webkit-text-size-adjust:100%;
   }
-  h1,h2{font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; margin:0}
+  h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; margin:0}
   button{font:inherit; cursor:pointer}
   input,select{font:inherit}
+  a{color:var(--ouro-escuro)}
 
+  /* ---- topo e abas ---- */
   .barra{
-    position:sticky; top:0; z-index:10;
-    display:flex; align-items:center; gap:.8rem;
-    padding:.9rem 1rem; background:#fff; border-bottom:1px solid var(--linha);
+    position:sticky; top:0; z-index:10; background:#fff; border-bottom:1px solid var(--linha);
   }
+  .barra-linha{display:flex; align-items:center; gap:.8rem; padding:.8rem 1rem .5rem; max-width:860px; margin:0 auto}
   .barra img{height:34px}
-  .barra .titulo{font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:600}
-  .barra .espaco{flex:1}
+  .barra .titulo{font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:600; flex:1}
+  .abas{display:flex; gap:.2rem; max-width:860px; margin:0 auto; padding:0 .6rem; overflow-x:auto}
+  .aba{
+    border:0; background:none; padding:.7rem .9rem; color:var(--cinza); font-weight:500;
+    border-bottom:3px solid transparent; white-space:nowrap; min-height:44px;
+  }
+  .aba[aria-selected="true"]{color:var(--preto); border-bottom-color:var(--ouro); font-weight:600}
 
-  .area{max-width:760px; margin:0 auto; padding:1.1rem 1rem 5rem}
+  .area{max-width:860px; margin:0 auto; padding:1.3rem 1rem 5rem}
+  .secao-titulo{display:flex; align-items:center; gap:.8rem; margin:0 0 1rem}
+  .secao-titulo h2{font-size:1.6rem; flex:1}
+  .explica{color:var(--cinza); margin:-.4rem 0 1.1rem; font-size:.95rem}
 
   .btn{
     border:0; border-radius:999px; padding:.8rem 1.3rem;
     background:var(--ouro); color:#fff; font-weight:600; letter-spacing:.02em;
-    min-height:46px;
+    min-height:46px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
   }
   .btn:hover{background:var(--ouro-escuro)}
   .btn[disabled]{opacity:.55; cursor:not-allowed}
@@ -50,6 +60,7 @@
   .btn.perigo{background:transparent; color:var(--vermelho); border:1px solid #E6C9C6}
   .btn.perigo:hover{background:#FCF2F1}
   .btn.largo{width:100%}
+  .btn.pequeno{padding:.5rem .85rem; font-size:.86rem; min-height:38px; font-weight:500}
 
   .cartao{background:#fff; border:1px solid var(--linha); border-radius:var(--raio); padding:1.2rem}
 
@@ -60,16 +71,20 @@
     border:1px solid var(--linha); border-radius:10px; background:#fff; color:var(--preto);
   }
   .campo:focus{outline:2px solid var(--rosa-forte); outline-offset:1px; border-color:transparent}
+  /* campos e caixas de marcar ficam dentro de <label>: sem isto herdam
+     o negrito e as maiúsculas do rótulo */
+  label .campo{text-transform:none; font-weight:400; letter-spacing:0; font-size:1rem; margin-top:.35rem}
+  label.marca{text-transform:none; font-weight:400; letter-spacing:0; font-size:.98rem; color:var(--preto);
+              display:flex; align-items:center; gap:.6rem; margin-bottom:.7rem}
+  .marca input{width:22px; height:22px; accent-color:var(--ouro); flex:none}
   .grupo{margin-bottom:1rem}
   .dupla{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
+  .dica{font-size:.86rem; color:var(--cinza); line-height:1.45; margin:.4rem 0 0}
 
-  .aviso{
-    margin:.9rem 0 0; padding:.8rem .95rem; border-radius:10px;
-    font-size:.93rem; line-height:1.45;
-  }
+  .aviso{margin:.9rem 0 0; padding:.8rem .95rem; border-radius:10px; font-size:.93rem; line-height:1.45}
   .aviso.erro{background:#FCF2F1; color:var(--vermelho); border:1px solid #E6C9C6}
   .aviso.ok{background:#F0F7F3; color:var(--verde); border:1px solid #CBE3D7}
-  .aviso:empty{display:none; padding:0; margin:0}
+  .aviso:empty{display:none}
 
   /* ---- entrar ---- */
   #entrar{max-width:400px; margin:3rem auto; padding:0 1rem}
@@ -77,31 +92,51 @@
   #entrar h1{font-size:1.6rem; margin-bottom:.3rem}
   #entrar .sub{color:var(--cinza); font-size:.95rem; margin:0 0 1.4rem}
 
-  /* ---- lista ---- */
-  .topo-lista{display:flex; align-items:center; gap:.8rem; margin:0 0 1rem}
-  .topo-lista h2{font-size:1.5rem}
-  .conta{font-size:.86rem; color:var(--cinza)}
+  /* ---- início ---- */
+  .numeros{display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem; margin-bottom:1rem}
+  .numero{background:#fff; border:1px solid var(--linha); border-radius:var(--raio); padding:1rem .8rem; text-align:center}
+  .numero b{display:block; font-family:'Cormorant Garamond',serif; font-size:2.1rem; line-height:1; font-weight:600}
+  .numero span{font-size:.82rem; color:var(--cinza)}
+  .categorias{display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin:0}
+  .categorias div{text-align:center; padding:.6rem .3rem; background:var(--rosa); border-radius:10px; font-size:.86rem; color:var(--cinza)}
+  .categorias b{display:block; color:var(--preto); font-size:1.15rem}
+  .pendencias{margin:0; padding:0; list-style:none}
+  .pendencias li{padding:.65rem 0; border-bottom:1px solid var(--linha); display:flex; gap:.7rem; align-items:flex-start}
+  .pendencias li:last-child{border-bottom:0}
+  .pendencias .sinal{flex:none; width:10px; height:10px; border-radius:50%; margin-top:.45rem; background:var(--ouro)}
+  .pendencias .sinal.bom{background:var(--verde)}
+  .atalhos{display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1rem}
+  .bloco{margin-bottom:1rem}
+  .bloco h3{font-size:1.2rem; margin-bottom:.7rem}
 
+  /* ---- peças ---- */
+  .filtros-lista{display:grid; grid-template-columns:1fr auto auto; gap:.6rem; margin-bottom:.9rem}
+  .contagem{font-size:.88rem; color:var(--cinza); margin:0 0 .7rem}
   .peca{
-    display:grid; grid-template-columns:76px 1fr auto; gap:.9rem; align-items:center;
+    display:grid; grid-template-columns:76px 1fr; gap:.9rem; align-items:start;
     background:#fff; border:1px solid var(--linha); border-radius:var(--raio);
     padding:.7rem; margin-bottom:.7rem;
   }
+  .peca.fora{background:#FAF7F8}
+  .peca.fora img{opacity:.55}
   .peca img{width:76px; height:95px; object-fit:cover; border-radius:9px; background:var(--rosa); display:block}
   .peca .nome{font-weight:600; line-height:1.3}
   .peca .det{font-size:.88rem; color:var(--cinza); margin-top:.15rem}
-  .peca .acoes{display:flex; flex-direction:column; gap:.4rem}
-  .peca .acoes button{padding:.5rem .8rem; font-size:.86rem; min-height:38px}
+  .peca .acoes{display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.6rem}
   .selo{
     display:inline-block; font-size:.7rem; font-weight:600; letter-spacing:.07em;
-    text-transform:uppercase; padding:.18rem .5rem; border-radius:999px; margin-right:.3rem;
+    text-transform:uppercase; padding:.18rem .5rem; border-radius:999px; margin:0 .3rem .25rem 0;
   }
   .selo.escondido{background:#F0ECEE; color:var(--cinza)}
   .selo.destaque{background:#FAF2DC; color:var(--ouro-escuro)}
-
   .vazio-lista{text-align:center; color:var(--cinza); padding:2.5rem 1rem; line-height:1.6}
 
-  /* ---- formulario ---- */
+  /* ---- frete ---- */
+  .regra{border-top:1px solid var(--linha); padding:1rem 0 .2rem; margin-top:.4rem}
+  .regra-nome{font-weight:600; margin:0 0 .15rem}
+  .regra-onde{font-size:.86rem; color:var(--cinza); margin:0 0 .8rem}
+
+  /* ---- formulário ---- */
   dialog{
     border:0; border-radius:16px; padding:0; width:min(560px,94vw);
     box-shadow:0 30px 70px -20px rgba(0,0,0,.4);
@@ -113,33 +148,21 @@
   .form-corpo{padding:1.2rem; max-height:min(70vh,640px); overflow:auto}
   .form-pe{display:flex; gap:.7rem; padding:1rem 1.2rem; border-top:1px solid var(--linha)}
   .form-pe .btn{flex:1}
-
   .foto-area{display:grid; grid-template-columns:110px 1fr; gap:1rem; align-items:start}
   .foto-previa{
     width:110px; height:138px; border-radius:10px; object-fit:cover;
     background:var(--rosa); border:1px dashed var(--linha); display:block;
   }
-  .foto-dica{font-size:.86rem; color:var(--cinza); line-height:1.45; margin:.5rem 0 0}
-
-  .marca{display:flex; align-items:center; gap:.6rem; margin-bottom:.7rem; font-size:.95rem}
-  .marca input{width:22px; height:22px; accent-color:var(--ouro)}
-
-  /* campos e caixas de marcar ficam dentro de <label>: sem isto herdam
-     o negrito e as maiúsculas do rótulo */
-  label .campo{text-transform:none; font-weight:400; letter-spacing:0; font-size:1rem; margin-top:.35rem; color:var(--preto)}
-  label.marca{text-transform:none; font-weight:400; letter-spacing:0; font-size:.98rem; color:var(--preto)}
-  .regra{border-top:1px solid var(--linha); padding:1rem 0 .2rem; margin-top:.4rem}
-  .regra-nome{font-weight:600; margin:0 0 .15rem}
-  .regra-onde{font-size:.86rem; color:var(--cinza); margin:0 0 .8rem}
 
   @media (max-width:560px){
     .dupla{grid-template-columns:1fr}
-    .peca{grid-template-columns:62px 1fr; grid-template-areas:"f i" "a a"}
-    .peca img{width:62px; height:78px; grid-area:f}
-    .peca .info{grid-area:i}
-    .peca .acoes{grid-area:a; flex-direction:row}
-    .peca .acoes button{flex:1}
+    .filtros-lista{grid-template-columns:1fr 1fr}
+    .filtros-lista .busca{grid-column:1 / -1}
+    .peca{grid-template-columns:62px 1fr}
+    .peca img{width:62px; height:78px}
     .foto-area{grid-template-columns:1fr}
+    .categorias{grid-template-columns:repeat(2,1fr)}
+    .numero b{font-size:1.8rem}
   }
 </style>
 </head>
@@ -166,40 +189,126 @@
   </div>
 </section>
 
-<!-- ======================= PAINEL ======================= -->
+<!-- ======================= TOPO E ABAS ======================= -->
 <header class="barra" id="barra" hidden>
-  <img src="img/logo-brasao.svg" alt="">
-  <span class="titulo">Painel da loja</span>
-  <span class="espaco"></span>
-  <button class="btn vazio" id="btnSair" type="button">Sair</button>
+  <div class="barra-linha">
+    <img src="img/logo-brasao.svg" alt="">
+    <span class="titulo">Painel da loja</span>
+    <a class="btn vazio pequeno" href="./" target="_blank" rel="noopener">Ver o site</a>
+  </div>
+  <nav class="abas" role="tablist" aria-label="Partes do painel">
+    <button class="aba" role="tab" data-aba="inicio"  aria-selected="true">Início</button>
+    <button class="aba" role="tab" data-aba="pecas"   aria-selected="false">Peças</button>
+    <button class="aba" role="tab" data-aba="frete"   aria-selected="false">Frete</button>
+    <button class="aba" role="tab" data-aba="conta"   aria-selected="false">Conta</button>
+  </nav>
 </header>
 
 <main class="area" id="painel" hidden>
-  <div class="topo-lista">
-    <h2>Peças</h2>
-    <span class="espaco" style="flex:1"></span>
-    <button class="btn" id="btnNova" type="button">+ Nova peça</button>
-  </div>
-  <p class="conta" id="conta"></p>
-  <div class="aviso" id="avisoPainel" role="status"></div>
-  <div id="lista"></div>
 
-  <div class="topo-lista" style="margin-top:2.4rem">
-    <h2>Frete</h2>
-  </div>
-  <div class="cartao">
-    <label class="marca"><input type="checkbox" id="freteAtivo"> Mostrar o cálculo de frete no site</label>
-    <div class="grupo" style="margin-top:.9rem">
-      <label for="freteGratis">Frete grátis em peças a partir de (R$)</label>
-      <input class="campo" type="number" id="freteGratis" min="0" step="0.01" inputmode="decimal" placeholder="Deixe vazio para não oferecer">
+  <!-- ---------- INÍCIO ---------- -->
+  <section data-painel="inicio">
+    <div class="secao-titulo"><h2>Como está o site</h2></div>
+
+    <div class="numeros">
+      <div class="numero"><b id="nNoSite">–</b><span>no site</span></div>
+      <div class="numero"><b id="nEscondidas">–</b><span>escondidas</span></div>
+      <div class="numero"><b id="nDestaque">–</b><span>em Mais vendidos</span></div>
     </div>
-    <div id="regras"></div>
-    <button class="btn largo" id="btnSalvarFrete" type="button">Salvar frete</button>
-    <div class="aviso" id="avisoFrete" role="status"></div>
-  </div>
+
+    <div class="cartao bloco">
+      <h3>Peças no site, por categoria</h3>
+      <div class="categorias" id="porCategoria"></div>
+    </div>
+
+    <div class="cartao bloco">
+      <h3>O que vale conferir</h3>
+      <ul class="pendencias" id="pendencias"></ul>
+    </div>
+
+    <div class="atalhos">
+      <button class="btn" type="button" data-ir="nova">+ Nova peça</button>
+      <button class="btn vazio" type="button" data-ir="pecas">Ver todas as peças</button>
+    </div>
+    <div class="aviso" id="avisoInicio" role="status"></div>
+  </section>
+
+  <!-- ---------- PEÇAS ---------- -->
+  <section data-painel="pecas" hidden>
+    <div class="secao-titulo">
+      <h2>Peças</h2>
+      <button class="btn" id="btnNova" type="button">+ Nova peça</button>
+    </div>
+
+    <div class="filtros-lista">
+      <input class="campo busca" type="search" id="busca" placeholder="Procurar pelo nome" aria-label="Procurar pelo nome">
+      <select class="campo" id="filtroCategoria" aria-label="Categoria">
+        <option value="">Todas as categorias</option>
+        <option value="brincos">Brincos</option>
+        <option value="colares">Colares</option>
+        <option value="aneis">Anéis</option>
+        <option value="pulseiras">Pulseiras</option>
+      </select>
+      <select class="campo" id="filtroSituacao" aria-label="Situação">
+        <option value="">Todas</option>
+        <option value="site">No site</option>
+        <option value="escondidas">Escondidas</option>
+        <option value="destaque">Mais vendidos</option>
+      </select>
+    </div>
+
+    <p class="contagem" id="contagem"></p>
+    <div class="aviso" id="avisoPainel" role="status"></div>
+    <div id="lista"></div>
+  </section>
+
+  <!-- ---------- FRETE ---------- -->
+  <section data-painel="frete" hidden>
+    <div class="secao-titulo"><h2>Frete</h2></div>
+    <p class="explica">A cliente informa o CEP e o site aplica uma destas opções. Vale um frete por pedido, não por peça.</p>
+
+    <div class="cartao">
+      <label class="marca"><input type="checkbox" id="freteAtivo"> Mostrar o cálculo de frete no site</label>
+      <div class="grupo" style="margin-top:.9rem">
+        <label for="freteGratis">Frete grátis em pedidos a partir de (R$)</label>
+        <input class="campo" type="number" id="freteGratis" min="0" step="0.01" inputmode="decimal" placeholder="Deixe vazio para não oferecer">
+      </div>
+      <div id="regras"></div>
+      <button class="btn largo" id="btnSalvarFrete" type="button">Salvar frete</button>
+      <div class="aviso" id="avisoFrete" role="status"></div>
+    </div>
+  </section>
+
+  <!-- ---------- CONTA ---------- -->
+  <section data-painel="conta" hidden>
+    <div class="secao-titulo"><h2>Conta</h2></div>
+
+    <div class="cartao bloco">
+      <h3>Quem está usando</h3>
+      <p id="conta" style="margin:0 0 1rem"></p>
+      <button class="btn vazio" id="btnSair" type="button">Sair do painel</button>
+    </div>
+
+    <div class="cartao bloco">
+      <h3>Trocar a senha</h3>
+      <form id="formSenha">
+        <div class="grupo">
+          <label for="senhaNova">Senha nova</label>
+          <input class="campo" type="password" id="senhaNova" autocomplete="new-password" minlength="8" required>
+          <p class="dica">Pelo menos 8 caracteres. Não use a mesma senha do e-mail.</p>
+        </div>
+        <div class="grupo">
+          <label for="senhaRepete">Repita a senha nova</label>
+          <input class="campo" type="password" id="senhaRepete" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button class="btn" type="submit" id="btnSenha">Trocar a senha</button>
+        <div class="aviso" id="avisoSenha" role="status"></div>
+      </form>
+    </div>
+  </section>
 </main>
 
-<!-- ======================= FORMULÁRIO ======================= -->
+<!-- ======================= FORMULÁRIO DA PEÇA ======================= -->
 <dialog id="dlg">
   <form id="formPeca" method="dialog">
     <div class="form-topo">
@@ -213,7 +322,7 @@
         <div>
           <label for="arquivo">Foto da peça</label>
           <input class="campo" type="file" id="arquivo" accept="image/*">
-          <p class="foto-dica">A foto é cortada em pé, no formato do site, e reduzida sozinha — pode mandar direto do celular. Deixe a peça no centro.</p>
+          <p class="dica">A foto é cortada em pé, no formato do site, e reduzida sozinha — pode mandar direto do celular. Deixe a peça no centro.</p>
         </div>
       </div>
 
@@ -244,7 +353,7 @@
       <div class="grupo" style="margin-top:1rem">
         <label for="ordem">Posição na vitrine</label>
         <input class="campo" type="number" id="ordem" value="0" step="1">
-        <p class="foto-dica">Número menor aparece antes. Deixe 0 se tanto faz.</p>
+        <p class="dica">Número menor aparece antes. Deixe 0 se tanto faz.</p>
       </div>
 
       <div class="aviso" id="avisoForm" role="status"></div>
@@ -269,10 +378,14 @@
   var sb = window.supabase.createClient(URL_BANCO, CHAVE);
 
   var LARG = 900, ALT = 1125;   // 4:5, a moldura do card no site
+  var ROTULOS = { brincos: "Brincos", colares: "Colares", aneis: "Anéis", pulseiras: "Pulseiras" };
 
   var el = function (id) { return document.getElementById(id); };
+  var itens = [];               // todas as peças, como vieram do banco
+  var config = {};              // configuração do frete, para o resumo
   var emEdicao = null;          // id da peça sendo editada, ou null
   var fotoNova = null;          // blob preparado, se o usuário escolheu foto
+  var fotoHerdada = null;       // ao duplicar, a cópia reaproveita a foto
 
   function mostrar(caixa, texto, tipo) {
     caixa.textContent = texto || "";
@@ -283,17 +396,22 @@
     return Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
 
+  function semAcento(s) {
+    return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  }
+
   function traduzErro(e) {
     var m = (e && (e.message || e.error_description)) || "Algo deu errado.";
     if (/Invalid login credentials/i.test(m)) return "E-mail ou senha incorretos.";
     if (/Email not confirmed/i.test(m))       return "Confirme o e-mail pelo link que a Supabase enviou e tente de novo.";
     if (/Failed to fetch|NetworkError/i.test(m)) return "Sem conexão com o banco. Verifique a internet.";
+    if (/should be different/i.test(m))       return "A senha nova precisa ser diferente da atual.";
     if (/row-level security|violates row-level/i.test(m))
       return "Esta conta ainda não tem permissão para editar o catálogo.";
     return m;
   }
 
-  // ---------- entrar / sair ----------
+  // ======================================================== entrar / sair
 
   el("formEntrar").addEventListener("submit", function (ev) {
     ev.preventDefault();
@@ -301,15 +419,14 @@
     btn.disabled = true;
     mostrar(el("avisoEntrar"), "");
     sb.auth.signInWithPassword({ email: el("email").value.trim(), password: el("senha").value })
-      .then(function (r) {
-        if (r.error) throw r.error;
-      })
+      .then(function (r) { if (r.error) throw r.error; })
       .catch(function (e) { mostrar(el("avisoEntrar"), traduzErro(e)); })
       .finally(function () { btn.disabled = false; });
   });
 
   el("btnSair").addEventListener("click", function () { sb.auth.signOut(); });
 
+  var usuarioAtual = null;
   sb.auth.onAuthStateChange(function (_evento, sessao) { aplicarSessao(sessao); });
   sb.auth.getSession().then(function (r) { aplicarSessao(r.data.session); });
 
@@ -318,86 +435,88 @@
     el("entrar").hidden = dentro;
     el("barra").hidden  = !dentro;
     el("painel").hidden = !dentro;
-    if (dentro) {
-      el("conta").textContent = "Conectada como " + sessao.user.email;
+    // a troca de senha também dispara este evento; só recarrega tudo
+    // quando de fato entrou outra pessoa
+    var quem = dentro ? sessao.user.email : null;
+    if (dentro && quem !== usuarioAtual) {
+      el("conta").textContent = "Conectada como " + quem;
       carregar();
       carregarFrete();
     }
+    usuarioAtual = quem;
   }
 
-  // ---------- lista ----------
+  // ======================================================== abas
+
+  function irPara(aba) {
+    document.querySelectorAll(".aba").forEach(function (b) {
+      b.setAttribute("aria-selected", b.dataset.aba === aba ? "true" : "false");
+    });
+    document.querySelectorAll("[data-painel]").forEach(function (s) {
+      s.hidden = s.dataset.painel !== aba;
+    });
+    try { sessionStorage.setItem("liuelui-aba", aba); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+
+  document.querySelectorAll(".aba").forEach(function (b) {
+    b.addEventListener("click", function () { irPara(b.dataset.aba); });
+  });
+
+  document.querySelectorAll("[data-ir]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      irPara("pecas");
+      if (b.dataset.ir === "nova") abrir(null);
+    });
+  });
+
+  try {
+    var ultima = sessionStorage.getItem("liuelui-aba");
+    if (ultima && document.querySelector('[data-painel="' + ultima + '"]')) irPara(ultima);
+  } catch (e) {}
+
+  // ======================================================== peças
 
   function carregar() {
     mostrar(el("avisoPainel"), "");
-    sb.from("produtos").select("*").order("ordem").order("criado_em", { ascending: false })
+    return sb.from("produtos").select("*").order("ordem").order("criado_em", { ascending: false })
       .then(function (r) {
         if (r.error) throw r.error;
-        desenhar(r.data || []);
+        itens = r.data || [];
+        desenharLista();
+        desenharResumo();
       })
-      .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });
+      .catch(function (e) {
+        mostrar(el("avisoPainel"), traduzErro(e));
+        mostrar(el("avisoInicio"), traduzErro(e));
+      });
   }
 
-  function desenhar(itens) {
-    var lista = el("lista");
-    lista.textContent = "";
+  ["busca", "filtroCategoria", "filtroSituacao"].forEach(function (id) {
+    el(id).addEventListener("input", desenharLista);
+  });
 
-    if (!itens.length) {
-      var p = document.createElement("p");
-      p.className = "vazio-lista";
-      p.textContent = "Nenhuma peça cadastrada ainda. Toque em “+ Nova peça” para começar.";
-      lista.appendChild(p);
-      return;
-    }
-
-    itens.forEach(function (it) {
-      var linha = document.createElement("div");
-      linha.className = "peca";
-
-      var img = document.createElement("img");
-      img.src = it.foto_url || "img/favicon.png";
-      img.alt = "";
-      linha.appendChild(img);
-
-      var info = document.createElement("div");
-      info.className = "info";
-
-      var selos = document.createElement("div");
-      if (!it.publicado) selos.appendChild(selo("Escondida", "escondido"));
-      if (it.destaque)   selos.appendChild(selo("Mais vendidos", "destaque"));
-      if (selos.children.length) info.appendChild(selos);
-
-      var nome = document.createElement("div");
-      nome.className = "nome";
-      nome.textContent = it.nome;
-      info.appendChild(nome);
-
-      var det = document.createElement("div");
-      det.className = "det";
-      det.textContent = rotulo(it.categoria) + " · " + emReais(it.preco);
-      info.appendChild(det);
-
-      linha.appendChild(info);
-
-      var acoes = document.createElement("div");
-      acoes.className = "acoes";
-
-      var bEditar = document.createElement("button");
-      bEditar.type = "button";
-      bEditar.className = "btn vazio";
-      bEditar.textContent = "Editar";
-      bEditar.addEventListener("click", function () { abrir(it); });
-      acoes.appendChild(bEditar);
-
-      var bApagar = document.createElement("button");
-      bApagar.type = "button";
-      bApagar.className = "btn perigo";
-      bApagar.textContent = "Apagar";
-      bApagar.addEventListener("click", function () { apagar(it); });
-      acoes.appendChild(bApagar);
-
-      linha.appendChild(acoes);
-      lista.appendChild(linha);
+  function filtrados() {
+    var termo = semAcento(el("busca").value.trim());
+    var cat = el("filtroCategoria").value;
+    var sit = el("filtroSituacao").value;
+    return itens.filter(function (it) {
+      if (termo && semAcento(it.nome).indexOf(termo) === -1) return false;
+      if (cat && it.categoria !== cat) return false;
+      if (sit === "site" && !it.publicado) return false;
+      if (sit === "escondidas" && it.publicado) return false;
+      if (sit === "destaque" && !it.destaque) return false;
+      return true;
     });
+  }
+
+  function botao(texto, classe, acao) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "btn pequeno " + classe;
+    b.textContent = texto;
+    b.addEventListener("click", acao);
+    return b;
   }
 
   function selo(texto, classe) {
@@ -407,36 +526,165 @@
     return s;
   }
 
-  function rotulo(c) {
-    return { brincos: "Brincos", colares: "Colares", aneis: "Anéis", pulseiras: "Pulseiras" }[c] || c;
+  function desenharLista() {
+    var lista = el("lista");
+    var mostrados = filtrados();
+    lista.textContent = "";
+
+    el("contagem").textContent = itens.length
+      ? (mostrados.length === itens.length
+          ? itens.length + (itens.length === 1 ? " peça cadastrada" : " peças cadastradas")
+          : "Mostrando " + mostrados.length + " de " + itens.length)
+      : "";
+
+    if (!mostrados.length) {
+      var p = document.createElement("p");
+      p.className = "vazio-lista";
+      p.textContent = itens.length
+        ? "Nenhuma peça com esse filtro."
+        : "Nenhuma peça cadastrada ainda. Toque em “+ Nova peça” para começar.";
+      lista.appendChild(p);
+      return;
+    }
+
+    mostrados.forEach(function (it) {
+      var linha = document.createElement("div");
+      linha.className = "peca" + (it.publicado ? "" : " fora");
+
+      var img = document.createElement("img");
+      img.src = it.foto_url || "img/favicon.png";
+      img.alt = "";
+      linha.appendChild(img);
+
+      var info = document.createElement("div");
+
+      if (!it.publicado) info.appendChild(selo("Escondida", "escondido"));
+      if (it.destaque)   info.appendChild(selo("Mais vendidos", "destaque"));
+
+      var nome = document.createElement("div");
+      nome.className = "nome";
+      nome.textContent = it.nome;
+      info.appendChild(nome);
+
+      var det = document.createElement("div");
+      det.className = "det";
+      det.textContent = (ROTULOS[it.categoria] || it.categoria) + " · " + emReais(it.preco);
+      info.appendChild(det);
+
+      var acoes = document.createElement("div");
+      acoes.className = "acoes";
+      acoes.appendChild(botao("Editar", "vazio", function () { abrir(it); }));
+      // o atalho mais usado: a peça acabou no estoque, some do site com um toque
+      acoes.appendChild(botao(it.publicado ? "Esconder" : "Mostrar no site", "vazio", function () {
+        alterar(it, { publicado: !it.publicado });
+      }));
+      acoes.appendChild(botao(it.destaque ? "Tirar dos mais vendidos" : "Pôr nos mais vendidos", "vazio", function () {
+        alterar(it, { destaque: !it.destaque });
+      }));
+      acoes.appendChild(botao("Duplicar", "vazio", function () { duplicar(it); }));
+      acoes.appendChild(botao("Apagar", "perigo", function () { apagar(it); }));
+      info.appendChild(acoes);
+
+      linha.appendChild(info);
+      lista.appendChild(linha);
+    });
   }
 
-  // ---------- formulário ----------
+  function alterar(item, dados) {
+    mostrar(el("avisoPainel"), "");
+    sb.from("produtos").update(dados).eq("id", item.id)
+      .then(function (r) {
+        if (r.error) throw r.error;
+        return carregar();
+      })
+      .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });
+  }
+
+  // ======================================================== início (resumo)
+
+  function desenharResumo() {
+    var noSite = itens.filter(function (i) { return i.publicado; });
+    el("nNoSite").textContent     = noSite.length;
+    el("nEscondidas").textContent = itens.length - noSite.length;
+    el("nDestaque").textContent   = noSite.filter(function (i) { return i.destaque; }).length;
+
+    var caixa = el("porCategoria");
+    caixa.textContent = "";
+    Object.keys(ROTULOS).forEach(function (c) {
+      var d = document.createElement("div");
+      var b = document.createElement("b");
+      b.textContent = noSite.filter(function (i) { return i.categoria === c; }).length;
+      d.appendChild(b);
+      d.appendChild(document.createTextNode(ROTULOS[c]));
+      caixa.appendChild(d);
+    });
+
+    // lista do que merece atenção
+    var avisos = [];
+    if (!noSite.length) {
+      avisos.push(["O catálogo está vazio. O site mostra um recado pedindo para a cliente chamar no WhatsApp.", false]);
+    }
+    var vazias = Object.keys(ROTULOS).filter(function (c) {
+      return !noSite.some(function (i) { return i.categoria === c; });
+    });
+    if (noSite.length && vazias.length) {
+      avisos.push(["Sem peças em: " + vazias.map(function (c) { return ROTULOS[c]; }).join(", ") +
+                   ". O filtro dessas categorias fica escondido no site.", false]);
+    }
+    if (noSite.length && !noSite.some(function (i) { return i.destaque; })) {
+      avisos.push(["Nenhuma peça marcada em “Mais vendidos”. Essa seção não aparece no site.", false]);
+    }
+    var semFoto = noSite.filter(function (i) { return !i.foto_url; }).length;
+    if (semFoto) avisos.push([semFoto + (semFoto === 1 ? " peça no site está sem foto." : " peças no site estão sem foto."), false]);
+    var gratis = noSite.filter(function (i) { return Number(i.preco) === 0; }).length;
+    if (gratis) avisos.push([gratis + (gratis === 1 ? " peça no site está com preço zero." : " peças no site estão com preço zero."), false]);
+
+    avisos.push([config.frete_ativo
+      ? "O cálculo de frete está ligado no site."
+      : "O cálculo de frete está desligado. O pedido chega sem valor de frete.", !!config.frete_ativo]);
+
+    if (avisos.length === 1 && noSite.length) avisos.unshift(["Catálogo em ordem: todas as categorias têm peça.", true]);
+
+    var ul = el("pendencias");
+    ul.textContent = "";
+    avisos.forEach(function (a) {
+      var li = document.createElement("li");
+      var s = document.createElement("span");
+      s.className = "sinal" + (a[1] ? " bom" : "");
+      li.appendChild(s);
+      li.appendChild(document.createTextNode(a[0]));
+      ul.appendChild(li);
+    });
+  }
+
+  // ======================================================== formulário da peça
 
   el("btnNova").addEventListener("click", function () { abrir(null); });
   el("btnFechar").addEventListener("click", fechar);
   el("btnCancelar").addEventListener("click", fechar);
   el("btnSalvar").addEventListener("click", salvar);
 
-  function abrir(item) {
-    emEdicao = item ? item.id : null;
+  function abrir(item, comoCopia) {
+    emEdicao = item && !comoCopia ? item.id : null;
     fotoNova = null;
-    el("formTitulo").textContent = item ? "Editar peça" : "Nova peça";
+    fotoHerdada = comoCopia && item ? item.foto_url : null;
+    el("formTitulo").textContent = comoCopia ? "Nova peça (cópia)" : (item ? "Editar peça" : "Nova peça");
     el("nome").value      = item ? item.nome : "";
     el("categoria").value = item ? item.categoria : "brincos";
     el("preco").value     = item ? item.preco : "";
     el("ordem").value     = item ? item.ordem : 0;
-    el("publicado").checked = item ? item.publicado : true;
-    el("destaque").checked  = item ? item.destaque : false;
+    el("publicado").checked = item ? (comoCopia ? true : item.publicado) : true;
+    el("destaque").checked  = item && !comoCopia ? item.destaque : false;
     // sem src o navegador desenha a moldura vazia; com src="" ele mostra
     // o ícone de imagem quebrada
     if (item && item.foto_url) el("previa").src = item.foto_url;
     else el("previa").removeAttribute("src");
     el("arquivo").value = "";
-    mostrar(el("avisoForm"), "");
+    mostrar(el("avisoForm"), comoCopia ? "Cópia de “" + item.nome + "”. Troque o nome e, se quiser, a foto." : "", "ok");
     el("dlg").showModal();
   }
 
+  function duplicar(item) { abrir(item, true); }
   function fechar() { el("dlg").close(); }
 
   el("arquivo").addEventListener("change", function () {
@@ -481,13 +729,20 @@
     var nome = el("nome").value.trim();
     var preco = parseFloat(el("preco").value);
 
-    if (!nome)                      return mostrar(el("avisoForm"), "Falta o nome da peça.");
-    if (!(preco >= 0))              return mostrar(el("avisoForm"), "Falta o preço.");
-    if (!emEdicao && !fotoNova)     return mostrar(el("avisoForm"), "Escolha uma foto da peça.");
+    if (!nome)          return mostrar(el("avisoForm"), "Falta o nome da peça.");
+    if (!(preco >= 0))  return mostrar(el("avisoForm"), "Falta o preço.");
+    if (!emEdicao && !fotoNova && !fotoHerdada) return mostrar(el("avisoForm"), "Escolha uma foto da peça.");
+
+    var repetida = itens.some(function (i) {
+      return i.id !== emEdicao && semAcento(i.nome.trim()) === semAcento(nome);
+    });
+    if (repetida) return mostrar(el("avisoForm"), "Já existe uma peça com esse nome. Use um nome diferente para a cliente não confundir no pedido.");
 
     var btn = el("btnSalvar");
     btn.disabled = true;
     mostrar(el("avisoForm"), "Salvando…", "ok");
+
+    var fotoAntiga = emEdicao ? (itens.filter(function (i) { return i.id === emEdicao; })[0] || {}).foto_url : null;
 
     enviarFoto()
       .then(function (url) {
@@ -500,14 +755,21 @@
           ordem: parseInt(el("ordem").value, 10) || 0
         };
         if (url) dados.foto_url = url;
-        return emEdicao
+        else if (!emEdicao && fotoHerdada) dados.foto_url = fotoHerdada;
+
+        var trocouFoto = !!url && !!fotoAntiga;
+        var idEditado = emEdicao;
+        return (emEdicao
           ? sb.from("produtos").update(dados).eq("id", emEdicao)
-          : sb.from("produtos").insert(dados);
+          : sb.from("produtos").insert(dados)
+        ).then(function (r) {
+          if (r.error) throw r.error;
+          if (trocouFoto) return removerFotoSeSobrou(fotoAntiga, idEditado);
+        });
       })
-      .then(function (r) {
-        if (r.error) throw r.error;
+      .then(function () {
         fechar();
-        carregar();
+        return carregar();
       })
       .catch(function (e) { mostrar(el("avisoForm"), traduzErro(e)); })
       .finally(function () { btn.disabled = false; });
@@ -523,7 +785,32 @@
       });
   }
 
-  // ---------- frete ----------
+  // Apaga o arquivo da foto só se nenhuma outra peça o usa (uma cópia
+  // feita com Duplicar divide a foto com a original). Falha aqui não
+  // atrapalha nada: sobra apenas um arquivo sem uso no armazenamento.
+  function removerFotoSeSobrou(url, idIgnorado) {
+    if (!url) return Promise.resolve();
+    var marca = "/object/public/fotos/";
+    var pos = url.indexOf(marca);
+    if (pos === -1) return Promise.resolve();
+    var emUso = itens.some(function (i) { return i.id !== idIgnorado && i.foto_url === url; });
+    if (emUso) return Promise.resolve();
+    return sb.storage.from("fotos").remove([decodeURIComponent(url.slice(pos + marca.length))])
+      .then(function () {}, function () {});
+  }
+
+  function apagar(item) {
+    if (!confirm("Apagar “" + item.nome + "” do site? Isso não pode ser desfeito.\n\nSe for só para tirar do ar por enquanto, use o botão Esconder.")) return;
+    sb.from("produtos").delete().eq("id", item.id)
+      .then(function (r) {
+        if (r.error) throw r.error;
+        return removerFotoSeSobrou(item.foto_url, item.id);
+      })
+      .then(function () { return carregar(); })
+      .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });
+  }
+
+  // ======================================================== frete
 
   var ONDE = {
     retirada: "Quando a cliente escolhe buscar na loja.",
@@ -540,10 +827,11 @@
     ]).then(function (rs) {
       if (rs[0].error) throw rs[0].error;
       if (rs[1].error) throw rs[1].error;
-      var cfg = (rs[0].data || [])[0] || {};
-      el("freteAtivo").checked = !!cfg.frete_ativo;
-      el("freteGratis").value = cfg.frete_gratis_acima === null || cfg.frete_gratis_acima === undefined ? "" : cfg.frete_gratis_acima;
+      config = (rs[0].data || [])[0] || {};
+      el("freteAtivo").checked = !!config.frete_ativo;
+      el("freteGratis").value = config.frete_gratis_acima === null || config.frete_gratis_acima === undefined ? "" : config.frete_gratis_acima;
       desenharRegras(rs[1].data || []);
+      desenharResumo();
     }).catch(function (e) { mostrar(el("avisoFrete"), traduzErro(e)); });
   }
 
@@ -569,7 +857,6 @@
       var d = document.createElement("div");
       d.className = "regra";
       d.dataset.id = r.id;
-      d.dataset.escopo = r.escopo;
 
       var n = document.createElement("p");
       n.className = "regra-nome";
@@ -598,7 +885,7 @@
       c.className = "r-ativo";
       c.checked = !!r.ativo;
       m.appendChild(c);
-      m.appendChild(document.createTextNode(" Oferecer esta opção"));
+      m.appendChild(document.createTextNode("Oferecer esta opção"));
       d.appendChild(m);
 
       caixa.appendChild(d);
@@ -633,28 +920,40 @@
     });
     if (invalido) return mostrar(el("avisoFrete"), "Confira os valores: algum está vazio ou negativo.");
 
-    trabalhos.push(sb.from("config_loja")
-      .update({ frete_ativo: el("freteAtivo").checked, frete_gratis_acima: gratisNum })
-      .eq("id", true));
+    var novaConfig = { frete_ativo: el("freteAtivo").checked, frete_gratis_acima: gratisNum };
+    trabalhos.push(sb.from("config_loja").update(novaConfig).eq("id", true));
 
     btn.disabled = true;
     mostrar(el("avisoFrete"), "Salvando…", "ok");
     Promise.all(trabalhos).then(function (rs) {
       rs.forEach(function (r) { if (r.error) throw r.error; });
+      config = novaConfig;
+      desenharResumo();
       mostrar(el("avisoFrete"), "Frete salvo. O site já está usando os valores novos.", "ok");
     }).catch(function (e) { mostrar(el("avisoFrete"), traduzErro(e)); })
       .finally(function () { btn.disabled = false; });
   });
 
-  function apagar(item) {
-    if (!confirm("Apagar “" + item.nome + "” do site? Isso não pode ser desfeito.\n\nSe for só para tirar do ar por enquanto, use Editar e desmarque “Aparecer no site”.")) return;
-    sb.from("produtos").delete().eq("id", item.id)
+  // ======================================================== conta
+
+  el("formSenha").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var nova = el("senhaNova").value, repete = el("senhaRepete").value;
+    if (nova.length < 8)  return mostrar(el("avisoSenha"), "A senha precisa ter pelo menos 8 caracteres.");
+    if (nova !== repete)  return mostrar(el("avisoSenha"), "As duas senhas não são iguais.");
+
+    var btn = el("btnSenha");
+    btn.disabled = true;
+    mostrar(el("avisoSenha"), "Trocando…", "ok");
+    sb.auth.updateUser({ password: nova })
       .then(function (r) {
         if (r.error) throw r.error;
-        carregar();
+        el("formSenha").reset();
+        mostrar(el("avisoSenha"), "Senha trocada. Use a nova na próxima vez que entrar.", "ok");
       })
-      .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });
-  }
+      .catch(function (e) { mostrar(el("avisoSenha"), traduzErro(e)); })
+      .finally(function () { btn.disabled = false; });
+  });
 })();
 </script>
 </body>
