@@ -307,3 +307,34 @@
 .craft-copy .eyebrow { justify-content: center; }
 .craft-stats { justify-content: center; }
 @media (max-width: 560px) { .craft-copy .stamp { width: 96px; height: 96px; } }
+
+/* =====================================================================
+   CATÁLOGO VINDO DO BANCO
+   A grade começa vazia e é preenchida pelo js/loja.js. Estes estilos
+   cobrem o que o visitante vê enquanto carrega, e o que ele vê se o
+   banco não responder — nesses casos ele precisa de um caminho, não de
+   uma página em branco.
+   ===================================================================== */
+.carregando {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--char);
+  padding: 3rem 1rem;
+  font-style: italic;
+}
+.recado-catalogo {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1.2rem;
+  background: #fff;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+}
+.recado-catalogo .recado-titulo {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.4vw, 1.7rem);
+  color: var(--ink);
+  margin: 0 0 .5rem;
+}
+.recado-catalogo p { color: var(--char); margin: 0 0 1.3rem; }
+.recado-catalogo .btn-v { display: inline-flex; }
