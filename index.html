@@ -121,7 +121,7 @@
         <div class="section-head reveal">
           <span class="eyebrow"><span class="index-no">01</span>&nbsp; Catálogo</span>
           <h2 id="catalogo-h">Escolha a sua <em>peça</em></h2>
-          <p>Escolha uma categoria e peça direto pelo WhatsApp. É só clicar em Pedir que a mensagem já vai com o nome do produto.</p>
+          <p>Monte a sua sacola e envie o pedido pelo WhatsApp. A mensagem já vai com as peças e o total.</p>
         </div>
       </div>
 
@@ -136,7 +136,7 @@
       <div class="frete" id="frete" hidden>
         <form class="frete-form" id="formFrete" novalidate>
           <label for="cep">Calcule o frete</label>
-          <input type="text" id="cep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9">
+          <input type="text" id="cep" class="cep-campo" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9">
           <button type="submit" class="filtro ativo">Calcular</button>
         </form>
         <p class="frete-resultado" id="freteResultado" aria-live="polite"></p>
@@ -292,6 +292,40 @@
       </nav>
     </div>
   </footer>
+
+  <!-- ============================================ SACOLA -->
+  <div class="sacola-barra" id="sacolaBarra" hidden>
+    <span id="sacolaResumo"></span>
+    <button type="button" id="sacolaAbrir">Ver sacola</button>
+  </div>
+
+  <dialog class="sacola" id="sacola" aria-labelledby="sacolaTitulo">
+    <div class="sacola-topo">
+      <h2 id="sacolaTitulo">Sua sacola</h2>
+      <button type="button" class="sacola-fechar" id="sacolaFechar" aria-label="Fechar a sacola">×</button>
+    </div>
+
+    <div class="sacola-corpo">
+      <div id="sacolaItens"></div>
+
+      <div class="sacola-frete" id="sacolaFrete" hidden>
+        <form class="frete-form" novalidate>
+          <label for="cepSacola">Frete</label>
+          <input type="text" id="cepSacola" class="cep-campo" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9">
+          <button type="submit" class="filtro ativo">Calcular</button>
+        </form>
+        <p class="frete-resultado" aria-live="polite"></p>
+      </div>
+
+      <div id="sacolaTotais"></div>
+    </div>
+
+    <div class="sacola-pe">
+      <a class="sacola-enviar" id="sacolaEnviar" href="#" target="_blank" rel="noopener" hidden>Enviar pedido pelo WhatsApp</a>
+      <button type="button" class="sacola-continuar" id="sacolaContinuar">Continuar escolhendo</button>
+      <p class="sacola-nota">O pagamento é combinado com a loja na conversa. Nada é cobrado pelo site.</p>
+    </div>
+  </dialog>
 
   <a class="whats-flutuante" href="https://wa.me/5519991703150" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2m0 1.8a8.2 8.2 0 1 1-4.2 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8m-3 4.4c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4 1 2.9.8 3.4.7.5 0 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3l-2-1c-.3-.1-.5-.2-.7.1l-.9 1.2c-.2.2-.3.2-.6.1a7 7 0 0 1-2-1.3 7.7 7.7 0 0 1-1.4-1.8c-.2-.3 0-.4.1-.6l.5-.5.3-.5v-.6l-.9-2.1c-.2-.6-.5-.5-.7-.5z"/></svg>

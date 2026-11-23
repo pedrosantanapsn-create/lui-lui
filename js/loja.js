@@ -2,7 +2,10 @@
    LIU E LUI SEMIJOIAS
    O catálogo e as regras de frete vêm do banco (Supabase), alimentados
    pelo painel da loja. Aqui dentro: montagem dos cards, filtro por
-   categoria, cálculo de frete por CEP e pedido pelo WhatsApp.
+   categoria, sacola, frete por CEP e envio do pedido pelo WhatsApp.
+
+   A sacola fica só no navegador da cliente. Nada é cobrado pelo site:
+   o pedido vira uma mensagem de WhatsApp e a loja confirma por lá.
 
    As chaves abaixo são públicas de propósito. Com elas só dá para LER
    o que está publicado — quem decide isso são as regras do banco.
@@ -13,27 +16,31 @@
   var WHATSAPP  = "5519991703150";
   var URL_BANCO = "https://usgguljynvqorgzmaokh.supabase.co";
   var CHAVE     = "sb_publishable_iX1zDJp44BpBbcFseJxztQ_KX8HWhU5";
-  var GUARDADO  = "liuelui-entrega";
+  var CHAVE_ENTREGA = "liuelui-entrega";
+  var CHAVE_SACOLA  = "liuelui-sacola";
+  var MAX_POR_PECA  = 9;
 
   var ROTULOS = {
     brincos: "Brincos", colares: "Colares",
     aneis: "Anéis",     pulseiras: "Pulseiras"
   };
 
-  var grade   = document.getElementById("gradeProdutos");
-  var filtros = document.getElementById("filtros");
-  var aviso   = document.getElementById("semResultado");
-  var vitrine = document.getElementById("bestScroller");
-  var secaoVendidos = document.getElementById("mais-vendidos");
-  var blocoFrete = document.getElementById("frete");
-  var formFrete  = document.getElementById("formFrete");
-  var campoCep   = document.getElementById("cep");
-  var saidaFrete = document.getElementById("freteResultado");
+  var el = function (id) { return document.getElementById(id); };
+
+  var grade   = el("gradeProdutos");
+  var filtros = el("filtros");
+  var aviso   = el("semResultado");
+  var vitrine = el("bestScroller");
+  var secaoVendidos = el("mais-vendidos");
+  var blocoFrete = el("frete");
 
   var pecas  = [];
   var regras = [];
+  var freteLigado = false;
   var gratisAcima = null;
   var entrega = null;   // { cep, cidade, uf, modo: "entrega" | "retirada" }
+  var sacola  = [];     // [{ id, qtd }]
+  var recadoCep = "";   // mensagem passageira da consulta de CEP
 
   /* ------------------------------------------------- utilidades */
 
@@ -52,7 +59,40 @@
     return e;
   }
 
-  /* ------------------------------------------------- frete */
+  function guardar(chave, valor) {
+    try {
+      if (valor === null) localStorage.removeItem(chave);
+      else localStorage.setItem(chave, JSON.stringify(valor));
+    } catch (e) { /* navegação privada: segue sem lembrar */ }
+  }
+
+  function ler(chave) {
+    try { return JSON.parse(localStorage.getItem(chave) || "null"); }
+    catch (e) { return null; }
+  }
+
+  function pecaPorId(id) {
+    for (var i = 0; i < pecas.length; i++) if (pecas[i].id === id) return pecas[i];
+    return null;
+  }
+
+  /* ------------------------------------------------- sacola: contas */
+
+  function itemDaSacola(id) {
+    for (var i = 0; i < sacola.length; i++) if (sacola[i].id === id) return sacola[i];
+    return null;
+  }
+
+  function quantidadeTotal() {
+    return sacola.reduce(function (s, it) { return s + it.qtd; }, 0);
+  }
+
+  function subtotal() {
+    return sacola.reduce(function (s, it) {
+      var p = pecaPorId(it.id);
+      return s + (p ? Number(p.preco) * it.qtd : 0);
+    }, 0);
+  }
 
   function regraDeRetirada() {
     return regras.filter(function (r) { return r.escopo === "retirada"; })[0] || null;
@@ -77,75 +117,227 @@
     return null;
   }
 
-  // Quanto custa mandar ESTA peça para o destino escolhido.
-  // Devolve null quando não há frete calculado ou a loja não entrega lá.
-  function freteDaPeca(preco) {
-    if (!entrega) return null;
+  // Frete do pedido inteiro: um valor só, não importa quantas peças.
+  // Devolve null quando não há CEP informado ou a loja não entrega lá.
+  function fretePedido() {
+    if (!freteLigado || !entrega) return null;
     if (entrega.modo === "retirada") {
       var ret = regraDeRetirada();
       return ret ? { valor: 0, retirada: true, regra: ret } : null;
     }
     var regra = regraParaDestino(entrega.cidade, entrega.uf);
     if (!regra) return null;
-    var gratis = gratisAcima !== null && Number(preco) >= gratisAcima;
+    var gratis = gratisAcima !== null && subtotal() >= gratisAcima;
     return { valor: gratis ? 0 : Number(regra.valor), gratis: gratis, regra: regra };
   }
 
-  function linkDoPedido(nome, preco) {
-    var linhas = ['Olá! Tenho interesse no produto "' + nome + '" (' + emReais(preco) + ")."];
-    var f = freteDaPeca(preco);
+  function mensagemDoPedido() {
+    var linhas = ["Olá! Quero fazer este pedido:", ""];
+    sacola.forEach(function (it) {
+      var p = pecaPorId(it.id);
+      if (p) linhas.push(it.qtd + "x " + p.nome + " — " + emReais(Number(p.preco) * it.qtd));
+    });
+    linhas.push("");
+
+    var f = fretePedido();
     if (f && f.retirada) {
+      linhas.push("Total: " + emReais(subtotal()));
       linhas.push("Vou retirar na loja.");
     } else if (f) {
+      linhas.push("Subtotal: " + emReais(subtotal()));
       linhas.push("Entrega para " + entrega.cidade + "/" + entrega.uf + " (CEP " + entrega.cep + "): " +
-                  (f.valor === 0 ? "frete grátis" : "frete " + emReais(f.valor)) + ".");
-      linhas.push("Total: " + emReais(Number(preco) + f.valor) + ".");
+                  (f.valor === 0 ? "frete grátis" : "frete " + emReais(f.valor)));
+      linhas.push("Total: " + emReais(subtotal() + f.valor));
+    } else {
+      linhas.push("Total: " + emReais(subtotal()));
     }
-    return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(linhas.join("\n"));
+    return linhas.join("\n");
   }
 
-  function atualizarLinks() {
-    document.querySelectorAll(".pedir[data-nome]").forEach(function (a) {
-      a.href = linkDoPedido(a.dataset.nome, a.dataset.preco);
+  /* ------------------------------------------------- sacola: ações */
+
+  function mudarQuantidade(id, qtd) {
+    var it = itemDaSacola(id);
+    if (qtd <= 0) {
+      sacola = sacola.filter(function (x) { return x.id !== id; });
+    } else if (it) {
+      it.qtd = Math.min(qtd, MAX_POR_PECA);
+    } else {
+      sacola.push({ id: id, qtd: Math.min(qtd, MAX_POR_PECA) });
+    }
+    guardar(CHAVE_SACOLA, sacola.length ? sacola : null);
+    atualizarTudo();
+  }
+
+  // Ao carregar: joga fora o que não está mais publicado. Preço e nome
+  // sempre vêm do banco, nunca do que ficou guardado no navegador.
+  function reconciliarSacola() {
+    var salva = ler(CHAVE_SACOLA);
+    sacola = [];
+    if (Array.isArray(salva)) {
+      salva.forEach(function (it) {
+        var q = parseInt(it && it.qtd, 10);
+        if (it && pecaPorId(it.id) && q > 0 && !itemDaSacola(it.id)) {
+          sacola.push({ id: it.id, qtd: Math.min(q, MAX_POR_PECA) });
+        }
+      });
+    }
+    guardar(CHAVE_SACOLA, sacola.length ? sacola : null);
+  }
+
+  /* ------------------------------------------------- telas */
+
+  function atualizarTudo() {
+    atualizarBotoes();
+    atualizarBarra();
+    desenharSacola();
+    mostrarFrete();
+  }
+
+  function atualizarBotoes() {
+    document.querySelectorAll(".adicionar[data-id]").forEach(function (b) {
+      var dentro = !!itemDaSacola(b.dataset.id);
+      b.classList.toggle("na-sacola", dentro);
+      b.textContent = dentro ? "Na sacola" : "Adicionar";
+      b.setAttribute("aria-pressed", dentro ? "true" : "false");
     });
   }
 
-  function lembrar() {
-    try {
-      if (entrega) localStorage.setItem(GUARDADO, JSON.stringify(entrega));
-      else localStorage.removeItem(GUARDADO);
-    } catch (e) { /* navegação privada: segue sem lembrar */ }
+  function atualizarBarra() {
+    var barra = el("sacolaBarra");
+    if (!barra) return;
+    var n = quantidadeTotal();
+    barra.hidden = n === 0;
+    document.body.classList.toggle("com-sacola", n > 0);
+    if (n > 0) {
+      el("sacolaResumo").textContent = (n === 1 ? "1 peça" : n + " peças") + " · " + emReais(subtotal());
+    }
   }
 
-  function mostrarFrete() {
-    if (!saidaFrete) return;
-    saidaFrete.textContent = "";
-    if (!entrega) return;
+  function desenharSacola() {
+    var lista = el("sacolaItens");
+    if (!lista) return;
+    lista.textContent = "";
 
-    var ret = regraDeRetirada();
-
-    if (entrega.modo === "retirada" && ret) {
-      saidaFrete.appendChild(elemento("strong", null, "Retirada na loja: grátis"));
-      if (ret.prazo) saidaFrete.appendChild(document.createTextNode(" · " + ret.prazo));
-      saidaFrete.appendChild(botaoTroca("Prefiro receber em casa", "entrega"));
-      return;
+    if (!sacola.length) {
+      lista.appendChild(elemento("p", "sacola-vazia", "Sua sacola está vazia. Toque em “Adicionar” nas peças que quiser."));
     }
 
-    var regra = regraParaDestino(entrega.cidade, entrega.uf);
-    if (!regra) {
-      saidaFrete.appendChild(document.createTextNode(
-        "Ainda não temos entrega para " + entrega.cidade + "/" + entrega.uf +
-        ". Chame a gente no WhatsApp para combinar."));
-    } else {
-      saidaFrete.appendChild(elemento("strong", null,
-        "Entrega para " + entrega.cidade + "/" + entrega.uf + ": " + emReais(regra.valor)));
-      if (regra.prazo) saidaFrete.appendChild(document.createTextNode(" · " + regra.prazo));
-      if (gratisAcima !== null) {
-        saidaFrete.appendChild(elemento("span", "frete-gratis",
-          "Frete grátis em peças a partir de " + emReais(gratisAcima)));
+    sacola.forEach(function (it) {
+      var p = pecaPorId(it.id);
+      if (!p) return;
+
+      var linha = elemento("div", "sacola-item");
+      var img = document.createElement("img");
+      img.src = p.foto_url || "img/favicon.png";
+      img.alt = "";
+      linha.appendChild(img);
+
+      var info = elemento("div", "sacola-info");
+      info.appendChild(elemento("div", "sacola-nome", p.nome));
+      info.appendChild(elemento("div", "sacola-preco", emReais(Number(p.preco) * it.qtd)));
+
+      var qtd = elemento("div", "sacola-qtd");
+      var menos = elemento("button", null, "−");
+      menos.type = "button";
+      menos.setAttribute("aria-label", "Diminuir quantidade de " + p.nome);
+      menos.addEventListener("click", function () { mudarQuantidade(it.id, it.qtd - 1); });
+      var num = elemento("span", null, String(it.qtd));
+      var mais = elemento("button", null, "+");
+      mais.type = "button";
+      mais.disabled = it.qtd >= MAX_POR_PECA;
+      mais.setAttribute("aria-label", "Aumentar quantidade de " + p.nome);
+      mais.addEventListener("click", function () { mudarQuantidade(it.id, it.qtd + 1); });
+      qtd.appendChild(menos); qtd.appendChild(num); qtd.appendChild(mais);
+      info.appendChild(qtd);
+      linha.appendChild(info);
+
+      var tirar = elemento("button", "sacola-tirar", "Tirar");
+      tirar.type = "button";
+      tirar.addEventListener("click", function () { mudarQuantidade(it.id, 0); });
+      linha.appendChild(tirar);
+
+      lista.appendChild(linha);
+    });
+
+    // totais
+    var tot = el("sacolaTotais");
+    tot.textContent = "";
+    var f = fretePedido();
+
+    function linhaTotal(rotulo, valor, forte) {
+      var d = elemento("div", "sacola-linha" + (forte ? " forte" : ""));
+      d.appendChild(elemento("span", null, rotulo));
+      d.appendChild(elemento("span", null, valor));
+      tot.appendChild(d);
+    }
+
+    if (sacola.length) {
+      if (f && !f.retirada) {
+        linhaTotal("Subtotal", emReais(subtotal()));
+        linhaTotal("Frete", f.valor === 0 ? "Grátis" : emReais(f.valor));
+        linhaTotal("Total", emReais(subtotal() + f.valor), true);
+      } else {
+        linhaTotal("Total", emReais(subtotal()), true);
       }
     }
-    if (ret) saidaFrete.appendChild(botaoTroca("Prefiro retirar na loja (grátis)", "retirada"));
+
+    var enviar = el("sacolaEnviar");
+    enviar.hidden = !sacola.length;
+    enviar.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(mensagemDoPedido());
+
+    var blocoCep = el("sacolaFrete");
+    if (blocoCep) blocoCep.hidden = !freteLigado || !sacola.length;
+  }
+
+  /* ------------------------------------------------- frete: telas */
+
+  // O resultado aparece em dois lugares (acima da vitrine e dentro da
+  // sacola), sempre com o mesmo conteúdo.
+  function mostrarFrete() {
+    document.querySelectorAll(".frete-resultado").forEach(function (saida) {
+      saida.textContent = "";
+      if (!freteLigado) return;
+
+      if (recadoCep) { saida.textContent = recadoCep; return; }
+      if (!entrega) return;
+
+      var ret = regraDeRetirada();
+
+      if (entrega.modo === "retirada" && ret) {
+        saida.appendChild(elemento("strong", null, "Retirada na loja: grátis"));
+        if (ret.prazo) saida.appendChild(document.createTextNode(" · " + ret.prazo));
+        saida.appendChild(botaoTroca("Prefiro receber em casa", "entrega"));
+        return;
+      }
+
+      var regra = regraParaDestino(entrega.cidade, entrega.uf);
+      if (!regra) {
+        saida.appendChild(document.createTextNode(
+          "Ainda não temos entrega para " + entrega.cidade + "/" + entrega.uf +
+          ". Chame a gente no WhatsApp para combinar."));
+      } else {
+        var f = fretePedido();
+        var gratisAgora = f && f.gratis && sacola.length > 0;
+        saida.appendChild(elemento("strong", null,
+          "Entrega para " + entrega.cidade + "/" + entrega.uf + ": " +
+          (gratisAgora ? "frete grátis" : emReais(regra.valor))));
+        if (regra.prazo) saida.appendChild(document.createTextNode(" · " + regra.prazo));
+
+        if (gratisAcima !== null && !gratisAgora) {
+          var falta = gratisAcima - subtotal();
+          saida.appendChild(elemento("span", "frete-gratis",
+            sacola.length && falta > 0
+              ? "Faltam " + emReais(falta) + " para o frete grátis"
+              : "Frete grátis em pedidos a partir de " + emReais(gratisAcima)));
+        }
+      }
+      if (ret) saida.appendChild(botaoTroca("Prefiro retirar na loja (grátis)", "retirada"));
+    });
+
+    document.querySelectorAll(".cep-campo").forEach(function (c) {
+      if (entrega && document.activeElement !== c) c.value = entrega.cep;
+    });
   }
 
   function botaoTroca(texto, modo) {
@@ -153,43 +345,53 @@
     b.type = "button";
     b.addEventListener("click", function () {
       entrega.modo = modo;
-      lembrar(); mostrarFrete(); atualizarLinks();
+      guardar(CHAVE_ENTREGA, entrega);
+      atualizarTudo();
     });
     return b;
   }
 
   function iniciarFrete() {
-    if (!formFrete || !campoCep) return;
+    document.querySelectorAll(".frete-form").forEach(function (form) {
+      var campo = form.querySelector(".cep-campo");
+      if (!campo) return;
 
-    // máscara 00000-000 enquanto digita
-    campoCep.addEventListener("input", function () {
-      var d = campoCep.value.replace(/\D/g, "").slice(0, 8);
-      campoCep.value = d.length > 5 ? d.slice(0, 5) + "-" + d.slice(5) : d;
-    });
+      // máscara 00000-000 enquanto digita
+      campo.addEventListener("input", function () {
+        var d = campo.value.replace(/\D/g, "").slice(0, 8);
+        campo.value = d.length > 5 ? d.slice(0, 5) + "-" + d.slice(5) : d;
+      });
 
-    formFrete.addEventListener("submit", function (ev) {
-      ev.preventDefault();
-      var d = campoCep.value.replace(/\D/g, "");
-      if (d.length !== 8) {
-        saidaFrete.textContent = "Digite o CEP com 8 números.";
-        return;
-      }
-      saidaFrete.textContent = "Consultando o CEP…";
+      form.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var d = campo.value.replace(/\D/g, "");
+        if (d.length !== 8) {
+          recadoCep = "Digite o CEP com 8 números.";
+          mostrarFrete();
+          return;
+        }
+        recadoCep = "Consultando o CEP…";
+        mostrarFrete();
 
-      fetch("https://viacep.com.br/ws/" + d + "/json/")
-        .then(function (r) { return r.json(); })
-        .then(function (j) {
-          if (!j || j.erro || !j.localidade) {
-            entrega = null; lembrar(); atualizarLinks();
-            saidaFrete.textContent = "Não encontrei esse CEP. Confira os números.";
-            return;
-          }
-          entrega = { cep: d.slice(0, 5) + "-" + d.slice(5), cidade: j.localidade, uf: j.uf, modo: "entrega" };
-          lembrar(); mostrarFrete(); atualizarLinks();
-        })
-        .catch(function () {
-          saidaFrete.textContent = "Não consegui consultar o CEP agora. Peça normalmente que combinamos o frete pelo WhatsApp.";
-        });
+        fetch("https://viacep.com.br/ws/" + d + "/json/")
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (!j || j.erro || !j.localidade) {
+              entrega = null;
+              guardar(CHAVE_ENTREGA, null);
+              recadoCep = "Não encontrei esse CEP. Confira os números.";
+            } else {
+              entrega = { cep: d.slice(0, 5) + "-" + d.slice(5), cidade: j.localidade, uf: j.uf, modo: "entrega" };
+              guardar(CHAVE_ENTREGA, entrega);
+              recadoCep = "";
+            }
+            atualizarTudo();
+          })
+          .catch(function () {
+            recadoCep = "Não consegui consultar o CEP agora. Envie o pedido que combinamos o frete pelo WhatsApp.";
+            atualizarTudo();
+          });
+      });
     });
   }
 
@@ -197,22 +399,17 @@
     regras = lista || [];
     gratisAcima = config && config.frete_gratis_acima !== null && config.frete_gratis_acima !== undefined
       ? Number(config.frete_gratis_acima) : null;
+    freteLigado = !!(config && config.frete_ativo) && regras.length > 0;
 
-    var ligado = !!(config && config.frete_ativo) && regras.length > 0;
-    if (blocoFrete) blocoFrete.hidden = !ligado;
-    if (!ligado) { entrega = null; atualizarLinks(); return; }
+    if (blocoFrete) blocoFrete.hidden = !freteLigado;
 
-    // retoma o CEP da última visita, recalculando com as regras de hoje
-    try {
-      var salvo = JSON.parse(localStorage.getItem(GUARDADO) || "null");
-      if (salvo && salvo.cep && salvo.cidade && salvo.uf) {
-        entrega = salvo;
-        if (campoCep) campoCep.value = salvo.cep;
-      }
-    } catch (e) { entrega = null; }
-
-    mostrarFrete();
-    atualizarLinks();
+    // retoma o CEP da última visita; o valor é recalculado com as regras de hoje
+    entrega = null;
+    if (freteLigado) {
+      var salvo = ler(CHAVE_ENTREGA);
+      if (salvo && salvo.cep && salvo.cidade && salvo.uf) entrega = salvo;
+    }
+    atualizarTudo();
   }
 
   /* ------------------------------------------------- um card */
@@ -236,17 +433,36 @@
     var linha = elemento("div", "row");
     linha.appendChild(elemento("span", "price", emReais(p.preco)));
 
-    var pedir = elemento("a", "pedir", "Pedir");
-    pedir.dataset.nome = p.nome;
-    pedir.dataset.preco = p.preco;
-    pedir.href = linkDoPedido(p.nome, p.preco);
-    pedir.target = "_blank";
-    pedir.rel = "noopener";
-    linha.appendChild(pedir);
+    var botao = elemento("button", "adicionar", "Adicionar");
+    botao.type = "button";
+    botao.dataset.id = p.id;
+    botao.addEventListener("click", function () {
+      // já está na sacola: o toque abre a sacola em vez de somar sem querer
+      if (itemDaSacola(p.id)) abrirSacola();
+      else mudarQuantidade(p.id, 1);
+    });
+    linha.appendChild(botao);
 
     meta.appendChild(linha);
     art.appendChild(meta);
     return art;
+  }
+
+  /* ------------------------------------------------- sacola: abrir/fechar */
+
+  function abrirSacola() {
+    var d = el("sacola");
+    if (d && !d.open) d.showModal();
+  }
+
+  function iniciarSacola() {
+    var d = el("sacola");
+    if (!d) return;
+    el("sacolaAbrir").addEventListener("click", abrirSacola);
+    el("sacolaFechar").addEventListener("click", function () { d.close(); });
+    el("sacolaContinuar").addEventListener("click", function () { d.close(); });
+    // toque fora da caixa fecha
+    d.addEventListener("click", function (ev) { if (ev.target === d) d.close(); });
   }
 
   /* ------------------------------------------------- recados na grade */
@@ -269,9 +485,10 @@
     if (filtros) filtros.hidden = true;
     if (blocoFrete) blocoFrete.hidden = true;
     if (aviso) aviso.hidden = true;
+    if (secaoVendidos) secaoVendidos.hidden = true;
   }
 
-  /* ------------------------------------------------- desenhar tudo */
+  /* ------------------------------------------------- desenhar vitrine */
 
   function desenhar() {
     grade.textContent = "";
@@ -351,7 +568,7 @@
     var sb = window.supabase.createClient(URL_BANCO, CHAVE);
 
     sb.from("produtos")
-      .select("nome,categoria,preco,foto_url,destaque,ordem,criado_em")
+      .select("id,nome,categoria,preco,foto_url,destaque,ordem,criado_em")
       .eq("publicado", true)
       .order("ordem", { ascending: true })
       .order("criado_em", { ascending: false })
@@ -365,6 +582,8 @@
           return;
         }
         desenhar();
+        reconciliarSacola();
+        atualizarTudo();
         carregarFrete(sb);
       })
       .catch(function () {
@@ -373,8 +592,8 @@
       });
   }
 
-  // O frete é um extra: se ele falhar, o catálogo continua funcionando
-  // e o pedido segue pelo WhatsApp sem o valor do frete.
+  // O frete é um extra: se ele falhar, o catálogo e a sacola continuam
+  // funcionando e o pedido segue pelo WhatsApp sem o valor do frete.
   function carregarFrete(sb) {
     Promise.all([
       sb.from("config_loja").select("frete_ativo,frete_gratis_acima").limit(1),
@@ -388,6 +607,7 @@
   function iniciar() {
     iniciarFiltros();
     iniciarFrete();
+    iniciarSacola();
     carregar();
   }
 
