@@ -133,6 +133,15 @@
         <button type="button" class="filtro" data-categoria="pulseiras">Pulseiras</button>
       </div>
 
+      <div class="frete" id="frete" hidden>
+        <form class="frete-form" id="formFrete" novalidate>
+          <label for="cep">Calcule o frete</label>
+          <input type="text" id="cep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9">
+          <button type="submit" class="filtro ativo">Calcular</button>
+        </form>
+        <p class="frete-resultado" id="freteResultado" aria-live="polite"></p>
+      </div>
+
       <div class="product-grid" id="gradeProdutos" aria-live="polite">
         <p class="carregando">Carregando as peças…</p>
       </div>

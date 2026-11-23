@@ -124,6 +124,14 @@
   .marca{display:flex; align-items:center; gap:.6rem; margin-bottom:.7rem; font-size:.95rem}
   .marca input{width:22px; height:22px; accent-color:var(--ouro)}
 
+  /* campos e caixas de marcar ficam dentro de <label>: sem isto herdam
+     o negrito e as maiúsculas do rótulo */
+  label .campo{text-transform:none; font-weight:400; letter-spacing:0; font-size:1rem; margin-top:.35rem; color:var(--preto)}
+  label.marca{text-transform:none; font-weight:400; letter-spacing:0; font-size:.98rem; color:var(--preto)}
+  .regra{border-top:1px solid var(--linha); padding:1rem 0 .2rem; margin-top:.4rem}
+  .regra-nome{font-weight:600; margin:0 0 .15rem}
+  .regra-onde{font-size:.86rem; color:var(--cinza); margin:0 0 .8rem}
+
   @media (max-width:560px){
     .dupla{grid-template-columns:1fr}
     .peca{grid-template-columns:62px 1fr; grid-template-areas:"f i" "a a"}
@@ -175,6 +183,20 @@
   <p class="conta" id="conta"></p>
   <div class="aviso" id="avisoPainel" role="status"></div>
   <div id="lista"></div>
+
+  <div class="topo-lista" style="margin-top:2.4rem">
+    <h2>Frete</h2>
+  </div>
+  <div class="cartao">
+    <label class="marca"><input type="checkbox" id="freteAtivo"> Mostrar o cálculo de frete no site</label>
+    <div class="grupo" style="margin-top:.9rem">
+      <label for="freteGratis">Frete grátis em peças a partir de (R$)</label>
+      <input class="campo" type="number" id="freteGratis" min="0" step="0.01" inputmode="decimal" placeholder="Deixe vazio para não oferecer">
+    </div>
+    <div id="regras"></div>
+    <button class="btn largo" id="btnSalvarFrete" type="button">Salvar frete</button>
+    <div class="aviso" id="avisoFrete" role="status"></div>
+  </div>
 </main>
 
 <!-- ======================= FORMULÁRIO ======================= -->
@@ -299,6 +321,7 @@
     if (dentro) {
       el("conta").textContent = "Conectada como " + sessao.user.email;
       carregar();
+      carregarFrete();
     }
   }
 
@@ -499,6 +522,129 @@
         return sb.storage.from("fotos").getPublicUrl(nome).data.publicUrl;
       });
   }
+
+  // ---------- frete ----------
+
+  var ONDE = {
+    retirada: "Quando a cliente escolhe buscar na loja.",
+    cidades:  "Vale para as cidades listadas abaixo.",
+    estado:   "Vale para o restante do estado.",
+    brasil:   "Vale para todos os outros estados."
+  };
+
+  function carregarFrete() {
+    mostrar(el("avisoFrete"), "");
+    Promise.all([
+      sb.from("config_loja").select("*").limit(1),
+      sb.from("frete_regras").select("*").order("ordem")
+    ]).then(function (rs) {
+      if (rs[0].error) throw rs[0].error;
+      if (rs[1].error) throw rs[1].error;
+      var cfg = (rs[0].data || [])[0] || {};
+      el("freteAtivo").checked = !!cfg.frete_ativo;
+      el("freteGratis").value = cfg.frete_gratis_acima === null || cfg.frete_gratis_acima === undefined ? "" : cfg.frete_gratis_acima;
+      desenharRegras(rs[1].data || []);
+    }).catch(function (e) { mostrar(el("avisoFrete"), traduzErro(e)); });
+  }
+
+  function campoRegra(rotuloTexto, tipo, valor, classe) {
+    var g = document.createElement("div");
+    g.className = "grupo";
+    var l = document.createElement("label");
+    l.textContent = rotuloTexto;
+    var i = document.createElement("input");
+    i.className = "campo " + classe;
+    i.type = tipo;
+    if (tipo === "number") { i.min = "0"; i.step = "0.01"; i.inputMode = "decimal"; }
+    i.value = valor === null || valor === undefined ? "" : valor;
+    l.appendChild(i);
+    g.appendChild(l);
+    return g;
+  }
+
+  function desenharRegras(lista) {
+    var caixa = el("regras");
+    caixa.textContent = "";
+    lista.forEach(function (r) {
+      var d = document.createElement("div");
+      d.className = "regra";
+      d.dataset.id = r.id;
+      d.dataset.escopo = r.escopo;
+
+      var n = document.createElement("p");
+      n.className = "regra-nome";
+      n.textContent = r.rotulo;
+      d.appendChild(n);
+
+      var o = document.createElement("p");
+      o.className = "regra-onde";
+      o.textContent = ONDE[r.escopo] || "";
+      d.appendChild(o);
+
+      if (r.escopo === "cidades") {
+        d.appendChild(campoRegra("Cidades (separadas por vírgula)", "text", (r.cidades || []).join(", "), "r-cidades"));
+      }
+
+      var dupla = document.createElement("div");
+      dupla.className = "dupla";
+      if (r.escopo !== "retirada") dupla.appendChild(campoRegra("Valor (R$)", "number", r.valor, "r-valor"));
+      dupla.appendChild(campoRegra("Prazo", "text", r.prazo, "r-prazo"));
+      d.appendChild(dupla);
+
+      var m = document.createElement("label");
+      m.className = "marca";
+      var c = document.createElement("input");
+      c.type = "checkbox";
+      c.className = "r-ativo";
+      c.checked = !!r.ativo;
+      m.appendChild(c);
+      m.appendChild(document.createTextNode(" Oferecer esta opção"));
+      d.appendChild(m);
+
+      caixa.appendChild(d);
+    });
+  }
+
+  el("btnSalvarFrete").addEventListener("click", function () {
+    var btn = this;
+    var gratis = el("freteGratis").value.trim();
+    var gratisNum = gratis === "" ? null : parseFloat(gratis);
+    if (gratisNum !== null && !(gratisNum > 0)) {
+      return mostrar(el("avisoFrete"), "O valor do frete grátis precisa ser maior que zero, ou ficar vazio.");
+    }
+
+    var trabalhos = [];
+    var invalido = false;
+    document.querySelectorAll("#regras .regra").forEach(function (d) {
+      var dados = {
+        prazo: d.querySelector(".r-prazo").value.trim() || null,
+        ativo: d.querySelector(".r-ativo").checked
+      };
+      var v = d.querySelector(".r-valor");
+      if (v) {
+        dados.valor = parseFloat(v.value);
+        if (!(dados.valor >= 0)) invalido = true;
+      }
+      var c = d.querySelector(".r-cidades");
+      if (c) {
+        dados.cidades = c.value.split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+      }
+      trabalhos.push(sb.from("frete_regras").update(dados).eq("id", d.dataset.id));
+    });
+    if (invalido) return mostrar(el("avisoFrete"), "Confira os valores: algum está vazio ou negativo.");
+
+    trabalhos.push(sb.from("config_loja")
+      .update({ frete_ativo: el("freteAtivo").checked, frete_gratis_acima: gratisNum })
+      .eq("id", true));
+
+    btn.disabled = true;
+    mostrar(el("avisoFrete"), "Salvando…", "ok");
+    Promise.all(trabalhos).then(function (rs) {
+      rs.forEach(function (r) { if (r.error) throw r.error; });
+      mostrar(el("avisoFrete"), "Frete salvo. O site já está usando os valores novos.", "ok");
+    }).catch(function (e) { mostrar(el("avisoFrete"), traduzErro(e)); })
+      .finally(function () { btn.disabled = false; });
+  });
 
   function apagar(item) {
     if (!confirm("Apagar “" + item.nome + "” do site? Isso não pode ser desfeito.\n\nSe for só para tirar do ar por enquanto, use Editar e desmarque “Aparecer no site”.")) return;

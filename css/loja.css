@@ -338,3 +338,34 @@
 }
 .recado-catalogo p { color: var(--char); margin: 0 0 1.3rem; }
 .recado-catalogo .btn-v { display: inline-flex; }
+
+/* =====================================================================
+   FRETE
+   Campo de CEP acima da grade. Só aparece quando a loja liga o frete
+   no painel. O resultado vale para todos os botões Pedir da página.
+   ===================================================================== */
+.frete {
+  max-width: 640px; margin: 0 auto 2.2rem; padding: 1.1rem 1.3rem;
+  background: #fff; border: 1px solid var(--hair); border-radius: 2px;
+  text-align: center;
+}
+.frete[hidden] { display: none; }
+.frete-form { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; justify-content: center; }
+.frete-form label {
+  font: 600 .74rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--char);
+}
+.frete-form input {
+  width: 9.5rem; padding: .6rem .9rem; text-align: center;
+  border: 1px solid var(--hair); border-radius: 999px; background: #fff; color: var(--ink);
+  font: 400 1rem/1.2 var(--sans);
+}
+.frete-form input:focus { outline: 2px solid var(--rosa); outline-offset: 1px; border-color: transparent; }
+.frete-resultado { margin: .9rem 0 0; color: var(--char); line-height: 1.6; }
+.frete-resultado:empty { display: none; }
+.frete-resultado strong { color: var(--ink); }
+.frete-gratis { display: block; font-size: .88rem; color: var(--gold-deep); }
+.frete-troca {
+  display: block; margin: .5rem auto 0; padding: .2rem .4rem;
+  border: 0; background: none; cursor: pointer;
+  color: var(--gold-deep); font: 500 .9rem/1.3 var(--sans); text-decoration: underline;
+}
