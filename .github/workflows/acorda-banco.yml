@@ -1,0 +1,37 @@
+# Mantém o banco de dados da loja acordado.
+#
+# O plano gratuito da Supabase pausa o projeto depois de uma semana sem
+# nenhum acesso. Com o banco pausado, o catálogo do site não carrega.
+# Este robô faz uma leitura simples todo dia, o que conta como acesso.
+#
+# Se a leitura falhar, o GitHub marca a execução como erro e avisa por
+# e-mail o dono do repositório: é o sinal de que o banco precisa de atenção.
+#
+# A chave abaixo é a chave pública do site (a mesma que está no js/loja.js).
+# Ela só permite ler as peças publicadas.
+
+name: Acorda o banco
+
+on:
+  schedule:
+    - cron: "17 9 * * *"   # todo dia às 06h17 de Brasília
+  workflow_dispatch:        # permite rodar na mão, pela aba Actions
+
+permissions: {}
+
+jobs:
+  leitura:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Lê uma peça do catálogo
+        run: |
+          codigo=$(curl -sS -o resposta.json -w "%{http_code}" --max-time 30 \
+            "https://usgguljynvqorgzmaokh.supabase.co/rest/v1/produtos?select=id&limit=1" \
+            -H "apikey: sb_publishable_iX1zDJp44BpBbcFseJxztQ_KX8HWhU5")
+          echo "Resposta do banco: $codigo"
+          if [ "$codigo" != "200" ]; then
+            echo "::error::O banco não respondeu como esperado (código $codigo). Verifique se o projeto está pausado em supabase.com."
+            cat resposta.json || true
+            exit 1
+          fi
