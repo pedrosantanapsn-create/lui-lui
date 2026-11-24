@@ -149,6 +149,16 @@
   .form-pe{display:flex; gap:.7rem; padding:1rem 1.2rem; border-top:1px solid var(--linha)}
   .form-pe .btn{flex:1}
   .foto-area{display:grid; grid-template-columns:110px 1fr; gap:1rem; align-items:start}
+  .opcional{font-weight:400; color:var(--cinza)}
+  textarea.campo{resize:vertical; min-height:5.5rem; line-height:1.5; font-family:inherit}
+  .extras{display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:.6rem}
+  .extras:empty{display:none}
+  .extra{position:relative; width:72px}
+  .extra img{width:72px; aspect-ratio:4/5; object-fit:cover; display:block; border-radius:6px; border:1px solid var(--linha, #e6d9de); background:#fff}
+  .extra button{
+    position:absolute; top:-7px; right:-7px; width:24px; height:24px; border-radius:50%;
+    border:0; background:#3a2a31; color:#fff; font-size:15px; line-height:1; cursor:pointer;
+  }
   .foto-previa{
     width:110px; height:138px; border-radius:10px; object-fit:cover;
     background:var(--rosa); border:1px dashed var(--linha); display:block;
@@ -347,6 +357,19 @@
         </div>
       </div>
 
+      <div class="grupo">
+        <label for="descricao">Descrição <span class="opcional">(opcional)</span></label>
+        <textarea class="campo" id="descricao" rows="4" maxlength="600" placeholder="Ex.: Banho de ouro 18k, 4 cm de comprimento, fecho tarraxa. Acompanha embalagem para presente."></textarea>
+        <p class="dica">Aparece na página da peça. Bom lugar para material, medidas e cuidados. <span id="contaDescricao">0</span>/600</p>
+      </div>
+
+      <div class="grupo">
+        <label for="arquivosExtras">Mais fotos <span class="opcional">(opcional, até 4)</span></label>
+        <div class="extras" id="extras"></div>
+        <input class="campo" type="file" id="arquivosExtras" accept="image/*" multiple>
+        <p class="dica">Outros ângulos, a peça no corpo, o detalhe do fecho. Aparecem só na página da peça; a foto principal continua sendo a da vitrine.</p>
+      </div>
+
       <label class="marca"><input type="checkbox" id="publicado" checked> Aparecer no site</label>
       <label class="marca"><input type="checkbox" id="destaque"> Mostrar em “Mais vendidos”</label>
 
@@ -386,6 +409,8 @@
   var emEdicao = null;          // id da peça sendo editada, ou null
   var fotoNova = null;          // blob preparado, se o usuário escolheu foto
   var fotoHerdada = null;       // ao duplicar, a cópia reaproveita a foto
+  var extras = [];              // fotos além da principal: { url } já salva ou { blob } nova
+  var MAX_EXTRAS = 4;
 
   function mostrar(caixa, texto, tipo) {
     caixa.textContent = texto || "";
@@ -582,6 +607,21 @@
         alterar(it, { destaque: !it.destaque });
       }));
       acoes.appendChild(botao("Duplicar", "vazio", function () { duplicar(it); }));
+      if (it.publicado) {
+        var copia = botao("Copiar link", "vazio", function () {
+          var link = location.href.replace(/admin\.html.*$/, "") + "#peca=" + it.id;
+          var feito = function () {
+            copia.textContent = "Link copiado";
+            setTimeout(function () { copia.textContent = "Copiar link"; }, 1800);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link).then(feito, function () { prompt("Copie o link da peça:", link); });
+          } else {
+            prompt("Copie o link da peça:", link);
+          }
+        });
+        acoes.appendChild(copia);
+      }
       acoes.appendChild(botao("Apagar", "perigo", function () { apagar(it); }));
       info.appendChild(acoes);
 
@@ -680,6 +720,11 @@
     if (item && item.foto_url) el("previa").src = item.foto_url;
     else el("previa").removeAttribute("src");
     el("arquivo").value = "";
+    el("descricao").value = item && item.descricao ? item.descricao : "";
+    el("contaDescricao").textContent = el("descricao").value.length;
+    extras = (item && item.fotos_extras ? item.fotos_extras : []).map(function (u) { return { url: u }; });
+    el("arquivosExtras").value = "";
+    desenharExtras();
     mostrar(el("avisoForm"), comoCopia ? "Cópia de “" + item.nome + "”. Troque o nome e, se quiser, a foto." : "", "ok");
     el("dlg").showModal();
   }
@@ -701,6 +746,52 @@
         fotoNova = null;
         mostrar(el("avisoForm"), "Não consegui ler essa imagem. Tente outra foto.");
       });
+  });
+
+  el("descricao").addEventListener("input", function () {
+    el("contaDescricao").textContent = this.value.length;
+  });
+
+  function desenharExtras() {
+    var caixa = el("extras");
+    caixa.textContent = "";
+    extras.forEach(function (x, i) {
+      var d = document.createElement("div");
+      d.className = "extra";
+      var img = document.createElement("img");
+      img.alt = "Foto extra " + (i + 1);
+      img.src = x.url || (x.previa = x.previa || URL.createObjectURL(x.blob));
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = "×";
+      b.setAttribute("aria-label", "Tirar a foto extra " + (i + 1));
+      b.addEventListener("click", function () {
+        extras.splice(i, 1);
+        desenharExtras();
+      });
+      d.appendChild(img); d.appendChild(b);
+      caixa.appendChild(d);
+    });
+    el("arquivosExtras").disabled = extras.length >= MAX_EXTRAS;
+  }
+
+  el("arquivosExtras").addEventListener("change", function () {
+    var escolhidos = Array.prototype.slice.call(this.files || []);
+    this.value = "";
+    if (!escolhidos.length) return;
+    var vagas = MAX_EXTRAS - extras.length;
+    var sobrou = escolhidos.length > vagas;
+    mostrar(el("avisoForm"), "Preparando as fotos…", "ok");
+    Promise.all(escolhidos.slice(0, vagas).map(function (f) {
+      return prepararFoto(f).then(function (b) { return { blob: b }; }, function () { return null; });
+    })).then(function (prontas) {
+      var boas = prontas.filter(Boolean);
+      extras = extras.concat(boas);
+      desenharExtras();
+      if (boas.length < prontas.length) mostrar(el("avisoForm"), "Uma das imagens não pôde ser lida e ficou de fora.");
+      else if (sobrou) mostrar(el("avisoForm"), "Cabem até " + MAX_EXTRAS + " fotos extras. As que passaram disso ficaram de fora.");
+      else mostrar(el("avisoForm"), "");
+    });
   });
 
   // Corta em 4:5 pelo centro e reduz para 900x1125. Assim a foto do celular,
@@ -742,11 +833,18 @@
     btn.disabled = true;
     mostrar(el("avisoForm"), "Salvando…", "ok");
 
-    var fotoAntiga = emEdicao ? (itens.filter(function (i) { return i.id === emEdicao; })[0] || {}).foto_url : null;
+    var antes = emEdicao ? (itens.filter(function (i) { return i.id === emEdicao; })[0] || {}) : {};
+    var fotoAntiga = antes.foto_url || null;
+    var extrasAntigas = antes.fotos_extras || [];
+    var descricao = el("descricao").value.trim();
+    var extrasFinais = [];
 
-    enviarFoto()
+    enviarExtras()
+      .then(function (lista) { extrasFinais = lista; return enviarFoto(); })
       .then(function (url) {
         var dados = {
+          descricao: descricao || null,
+          fotos_extras: extrasFinais,
           nome: nome,
           categoria: el("categoria").value,
           preco: preco,
@@ -764,7 +862,10 @@
           : sb.from("produtos").insert(dados)
         ).then(function (r) {
           if (r.error) throw r.error;
-          if (trocouFoto) return removerFotoSeSobrou(fotoAntiga, idEditado);
+          // arquivos que deixaram de ser usados saem do armazenamento
+          var sobras = extrasAntigas.filter(function (u) { return extrasFinais.indexOf(u) === -1; });
+          if (trocouFoto) sobras.push(fotoAntiga);
+          return Promise.all(sobras.map(function (u) { return removerFotoSeSobrou(u, idEditado); }));
         });
       })
       .then(function () {
@@ -775,14 +876,27 @@
       .finally(function () { btn.disabled = false; });
   }
 
-  function enviarFoto() {
-    if (!fotoNova) return Promise.resolve(null);
+  function enviarArquivo(blob) {
     var nome = Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
-    return sb.storage.from("fotos").upload(nome, fotoNova, { contentType: "image/jpeg" })
+    return sb.storage.from("fotos").upload(nome, blob, { contentType: "image/jpeg" })
       .then(function (r) {
         if (r.error) throw r.error;
         return sb.storage.from("fotos").getPublicUrl(nome).data.publicUrl;
       });
+  }
+
+  function enviarFoto() {
+    return fotoNova ? enviarArquivo(fotoNova) : Promise.resolve(null);
+  }
+
+  // Devolve a lista final de endereços, na ordem da tela. As que já
+  // estavam salvas passam direto; as novas sobem agora e ficam marcadas
+  // como salvas, para não subirem de novo se o resto do salvamento falhar.
+  function enviarExtras() {
+    return Promise.all(extras.map(function (x) {
+      if (x.url) return x.url;
+      return enviarArquivo(x.blob).then(function (u) { x.url = u; return u; });
+    }));
   }
 
   // Apaga o arquivo da foto só se nenhuma outra peça o usa (uma cópia
@@ -793,7 +907,10 @@
     var marca = "/object/public/fotos/";
     var pos = url.indexOf(marca);
     if (pos === -1) return Promise.resolve();
-    var emUso = itens.some(function (i) { return i.id !== idIgnorado && i.foto_url === url; });
+    var emUso = itens.some(function (i) {
+      return i.id !== idIgnorado &&
+             (i.foto_url === url || (i.fotos_extras || []).indexOf(url) !== -1);
+    });
     if (emUso) return Promise.resolve();
     return sb.storage.from("fotos").remove([decodeURIComponent(url.slice(pos + marca.length))])
       .then(function () {}, function () {});
@@ -804,7 +921,9 @@
     sb.from("produtos").delete().eq("id", item.id)
       .then(function (r) {
         if (r.error) throw r.error;
-        return removerFotoSeSobrou(item.foto_url, item.id);
+        return Promise.all([item.foto_url].concat(item.fotos_extras || []).map(function (u) {
+          return removerFotoSeSobrou(u, item.id);
+        }));
       })
       .then(function () { return carregar(); })
       .catch(function (e) { mostrar(el("avisoPainel"), traduzErro(e)); });

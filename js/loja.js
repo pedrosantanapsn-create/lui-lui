@@ -197,8 +197,10 @@
   function atualizarBotoes() {
     document.querySelectorAll(".adicionar[data-id]").forEach(function (b) {
       var dentro = !!itemDaSacola(b.dataset.id);
+      var grande = b.classList.contains("peca-adicionar");
       b.classList.toggle("na-sacola", dentro);
-      b.textContent = dentro ? "Na sacola" : "Adicionar";
+      b.textContent = dentro ? (grande ? "Na sacola · ver sacola" : "Na sacola")
+                             : (grande ? "Adicionar à sacola" : "Adicionar");
       b.setAttribute("aria-pressed", dentro ? "true" : "false");
     });
   }
@@ -418,7 +420,10 @@
     var art = elemento("article", "pcard");
     art.dataset.categoria = p.categoria;
 
-    var moldura = elemento("div", "frame");
+    // a foto e o nome levam à página da peça
+    var moldura = elemento("a", "frame");
+    moldura.href = "#peca=" + p.id;
+    moldura.setAttribute("aria-label", "Ver " + p.nome);
     var img = document.createElement("img");
     img.src = p.foto_url || "img/favicon.png";
     img.alt = p.nome;
@@ -428,7 +433,11 @@
 
     var meta = elemento("div", "meta");
     meta.appendChild(elemento("span", "cat", ROTULOS[p.categoria] || p.categoria));
-    meta.appendChild(elemento("h3", null, p.nome));
+    var titulo = elemento("h3");
+    var linkNome = elemento("a", null, p.nome);
+    linkNome.href = "#peca=" + p.id;
+    titulo.appendChild(linkNome);
+    meta.appendChild(titulo);
 
     var linha = elemento("div", "row");
     linha.appendChild(elemento("span", "price", emReais(p.preco)));
@@ -446,6 +455,125 @@
     meta.appendChild(linha);
     art.appendChild(meta);
     return art;
+  }
+
+  /* ------------------------------------------------- página de uma peça */
+
+  var estadoCatalogo = "carregando";   // "carregando" | "pronto" | "falhou"
+
+  function idDaPeca() {
+    var m = /^#peca=(.+)$/.exec(location.hash);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  function linkDaPeca(id) {
+    return location.origin + location.pathname + "#peca=" + id;
+  }
+
+  function trocarFotoDaPeca(url, miniatura) {
+    el("pecaFoto").src = url;
+    el("pecaMiniaturas").querySelectorAll("button").forEach(function (b) {
+      var escolhida = b === miniatura;
+      b.classList.toggle("ativa", escolhida);
+      b.setAttribute("aria-pressed", escolhida ? "true" : "false");
+    });
+  }
+
+  function desenharPeca() {
+    var id = idDaPeca();
+    if (!id || !el("peca")) return;
+
+    var espera = el("pecaEspera"), corpo = el("pecaCorpo"),
+        sumiu = el("pecaSumiu"), parecidas = el("pecaParecidas");
+
+    if (estadoCatalogo === "carregando") {
+      espera.hidden = false; corpo.hidden = true; sumiu.hidden = true; parecidas.hidden = true;
+      return;
+    }
+
+    var p = estadoCatalogo === "pronto" ? pecaPorId(id) : null;
+    espera.hidden = true;
+    corpo.hidden = !p;
+    sumiu.hidden = !!p;
+    parecidas.hidden = true;
+    if (!p) return;
+
+    document.title = p.nome + " | Liu e Lui Semijoias";
+
+    el("pecaCat").textContent = ROTULOS[p.categoria] || p.categoria;
+    el("pecaNome").textContent = p.nome;
+    el("pecaPreco").textContent = emReais(p.preco);
+
+    var desc = el("pecaDescricao");
+    desc.textContent = p.descricao || "";
+    desc.hidden = !p.descricao;
+
+    // fotos: a principal primeiro, depois as extras
+    var fotos = [p.foto_url || "img/favicon.png"].concat(p.fotos_extras || []);
+    var foto = el("pecaFoto");
+    foto.alt = p.nome;
+    var minis = el("pecaMiniaturas");
+    minis.textContent = "";
+    minis.hidden = fotos.length < 2;
+    fotos.forEach(function (url, i) {
+      var b = elemento("button");
+      b.type = "button";
+      b.setAttribute("aria-label", "Foto " + (i + 1) + " de " + fotos.length);
+      var im = document.createElement("img");
+      im.src = url; im.alt = ""; im.loading = "lazy";
+      b.appendChild(im);
+      b.addEventListener("click", function () { trocarFotoDaPeca(url, b); });
+      minis.appendChild(b);
+    });
+    trocarFotoDaPeca(fotos[0], minis.firstChild);
+
+    var botao = el("pecaAdicionar");
+    botao.dataset.id = p.id;
+
+    el("pecaDuvida").href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(
+      "Olá! Tenho uma dúvida sobre esta peça: " + p.nome + " (" + emReais(p.preco) + ")\n" + linkDaPeca(p.id));
+    el("pecaCopiado").textContent = "";
+
+    // até 4 peças da mesma categoria
+    var outras = pecas.filter(function (x) { return x.categoria === p.categoria && x.id !== p.id; }).slice(0, 4);
+    var gradeOutras = el("pecaParecidasGrade");
+    gradeOutras.textContent = "";
+    outras.forEach(function (x) { gradeOutras.appendChild(cartao(x)); });
+    gradeOutras.style.gridTemplateColumns =
+      outras.length < 4 ? "repeat(" + outras.length + ", minmax(0, 300px))" : "";
+    parecidas.hidden = outras.length === 0;
+
+    atualizarBotoes();
+  }
+
+  function iniciarPeca() {
+    if (!el("peca")) return;
+
+    el("pecaAdicionar").addEventListener("click", function () {
+      var id = this.dataset.id;
+      if (!id) return;
+      if (itemDaSacola(id)) abrirSacola();
+      else mudarQuantidade(id, 1);
+    });
+
+    el("pecaCompartilhar").addEventListener("click", function () {
+      var id = idDaPeca(), p = id && pecaPorId(id);
+      if (!p) return;
+      var link = linkDaPeca(id), aviso = el("pecaCopiado");
+      // no celular abre o menu de compartilhar; no computador copia
+      if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
+        navigator.share({ title: p.nome + " | Liu e Lui", url: link }).catch(function () {});
+        return;
+      }
+      var copiar = navigator.clipboard && navigator.clipboard.writeText
+        ? navigator.clipboard.writeText(link)
+        : Promise.reject();
+      copiar.then(function () { aviso.textContent = "Link copiado."; },
+                  function () { aviso.textContent = link; });
+    });
+
+    window.addEventListener("hashchange", desenharPeca);
+    desenharPeca();
   }
 
   /* ------------------------------------------------- sacola: abrir/fechar */
@@ -564,6 +692,8 @@
     if (!grade) return;
 
     if (!window.supabase) {
+      estadoCatalogo = "falhou";
+      desenharPeca();
       recado("Não foi possível carregar o catálogo",
              "Atualize a página. Se continuar assim, fale com a gente que mostramos as peças por lá.");
       return;
@@ -572,7 +702,7 @@
     var sb = window.supabase.createClient(URL_BANCO, CHAVE);
 
     sb.from("produtos")
-      .select("id,nome,categoria,preco,foto_url,destaque,ordem,criado_em")
+      .select("id,nome,categoria,preco,foto_url,fotos_extras,descricao,destaque,ordem,criado_em")
       .eq("publicado", true)
       .order("ordem", { ascending: true })
       .order("criado_em", { ascending: false })
@@ -580,7 +710,10 @@
         if (r.error) throw r.error;
         pecas = r.data || [];
 
+        estadoCatalogo = "pronto";
+
         if (!pecas.length) {
+          desenharPeca();
           recado("Estamos atualizando o catálogo",
                  "As peças voltam para cá em breve. Enquanto isso, chame a gente no WhatsApp que mostramos tudo por lá.");
           return;
@@ -588,9 +721,12 @@
         desenhar();
         reconciliarSacola();
         atualizarTudo();
+        desenharPeca();
         carregarFrete(sb);
       })
       .catch(function () {
+        estadoCatalogo = "falhou";
+        desenharPeca();
         recado("O catálogo não carregou agora",
                "Pode ser a conexão. Tente de novo em alguns minutos ou fale com a gente pelo WhatsApp.");
       });
@@ -612,6 +748,7 @@
     iniciarFiltros();
     iniciarFrete();
     iniciarSacola();
+    iniciarPeca();
     carregar();
   }
 

@@ -162,6 +162,46 @@
       <p class="sem-resultado" id="semResultado" hidden>Nenhuma peça nesta categoria por enquanto.</p>
     </section>
 
+    <!-- ============================================ PÁGINA DE UMA PEÇA -->
+    <section class="section peca wrap" data-aba="peca" id="peca" aria-labelledby="pecaNome">
+      <a class="peca-voltar" href="#catalogo">← Voltar ao catálogo</a>
+
+      <p class="carregando" id="pecaEspera">Carregando a peça…</p>
+
+      <div class="peca-corpo" id="pecaCorpo" hidden>
+        <div class="peca-galeria">
+          <div class="peca-foto"><img id="pecaFoto" alt=""></div>
+          <div class="peca-miniaturas" id="pecaMiniaturas" role="group" aria-label="Outras fotos da peça"></div>
+        </div>
+
+        <div class="peca-info">
+          <span class="peca-cat" id="pecaCat"></span>
+          <h1 id="pecaNome"></h1>
+          <p class="peca-preco" id="pecaPreco"></p>
+          <p class="peca-descricao" id="pecaDescricao" hidden></p>
+
+          <div class="peca-acoes">
+            <button type="button" class="adicionar peca-adicionar" id="pecaAdicionar">Adicionar</button>
+            <a class="peca-duvida" id="pecaDuvida" target="_blank" rel="noopener">Tirar dúvida no WhatsApp</a>
+          </div>
+
+          <button type="button" class="peca-compartilhar" id="pecaCompartilhar">Copiar o link desta peça</button>
+          <span class="peca-copiado" id="pecaCopiado" role="status"></span>
+        </div>
+      </div>
+
+      <div class="recado-catalogo" id="pecaSumiu" hidden>
+        <p class="recado-titulo">Esta peça não está mais no catálogo</p>
+        <p>Ela pode ter esgotado ou saído de linha. Veja as outras peças ou fale com a gente.</p>
+        <a class="btn-v" href="#catalogo">Ver o catálogo</a>
+      </div>
+
+      <div class="peca-parecidas" id="pecaParecidas" hidden>
+        <h2>Você também pode gostar</h2>
+        <div class="product-grid" id="pecaParecidasGrade"></div>
+      </div>
+    </section>
+
     <!-- ============================================ SOBRE A LOJA -->
     <section class="section craft" data-aba="sobre" id="sobre" aria-labelledby="sobre-h">
       <div class="craft-grid wrap">
